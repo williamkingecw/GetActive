@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Active</title>
+<style>
+/* 1. Modern Get Active shell */
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 100%; height: 100%; }
+body { font: 13px 'Segoe UI', Inter, Roboto, 'Helvetica Neue', Arial, sans-serif; color: #f3f7f5; overflow: hidden; background: linear-gradient(180deg,#123524 0%,#0b291c 11%,#06180f 21%,#020905 30%,#000 42%,#000 100%); }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .45; }
+button:focus-visible, summary:focus-visible { outline: 2px solid #7dddb2; outline-offset: -2px; }
+.page { width: min(84vw,1500px); height: 100vh; height: 100dvh; margin: 0 auto; display: grid; grid-template-rows: minmax(0,1fr) auto; align-items: center; gap: 9px; padding: clamp(14px,3vh,28px) 0 10px; }
+.app { width: 100%; height: min(86vh,900px); height: min(86dvh,900px); min-height: 520px; max-height: calc(100dvh - 50px); display: grid; grid-template-rows: auto auto minmax(0,1fr); overflow: visible; background: rgba(5,20,15,.94); border: 1px solid rgba(90,184,143,.42); border-radius: 13px; box-shadow: 0 18px 48px #0009,0 0 28px rgba(49,147,105,.12); }
+.app-header { display: flex; align-items: center; justify-content: space-between; gap: 28px; min-width: 0; padding: clamp(14px,2.1vh,22px) 24px 12px; }
+.brand { min-width: 0; display: flex; align-items: center; gap: clamp(13px,1.2vw,19px); }
+.brand-mark { width: clamp(39px,3.2vw,50px); height: clamp(39px,3.2vw,50px); flex: 0 0 auto; fill: none; stroke: #73d9ae; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 8px rgba(81,207,153,.16)); }
+.brand-divider { width: 1px; height: clamp(42px,3.7vw,57px); flex: 0 0 auto; background: linear-gradient(180deg,transparent,rgba(117,211,171,.58) 18%,rgba(117,211,171,.58) 82%,transparent); }
+h1 { min-width: 0; margin: 0; font: 800 clamp(40px,3.7vw,56px)/.92 'Segoe UI', Inter, Roboto, Arial, sans-serif; letter-spacing: -.045em; white-space: nowrap; }
+.brand-get { color: #f3f7f5; }
+.brand-active { color: #8ce0ba; background: linear-gradient(180deg,#b5efd3 5%,#66cb9f 92%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.purpose { flex: 0 0 auto; margin: 0; color: #e2eee8; font: 600 clamp(10px,.82vw,12px)/1.4 'Segoe UI', Inter, Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
+.purpose-chevron { margin-inline: 7px; color: #75d4ad; font-weight: 500; }
+.app-menu { display: flex; align-items: center; gap: 8px; min-height: 54px; padding: 8px 18px 10px; border-top: 1px solid rgba(132,216,179,.10); }
+details { position: relative; }
+.app-menu > details > summary, .menu-placeholder { appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 36px; padding: 0 13px; color: #e7f3ec; font: 600 13px 'Segoe UI', Inter, Arial, sans-serif; border: 1px solid rgba(116,207,167,.28); border-radius: 7px; background: rgba(16,56,43,.72); cursor: pointer; list-style: none; box-shadow: inset 0 1px rgba(255,255,255,.025); }
+.app-menu > details > summary:hover, .app-menu > details[open] > summary, .menu-placeholder:hover:not(:disabled) { color: #fff; background: rgba(28,79,61,.90); border-color: rgba(126,224,181,.48); }
+.app-menu > details > summary:active { background: rgba(8,39,29,.96); }
+.app-menu .menu-placeholder:disabled { color: #afc7ba; opacity: .62; cursor: default; }
+.app-menu summary:focus-visible { outline-color: #8bdab8; outline-offset: -3px; }
+.app-menu summary::-webkit-details-marker, .command::-webkit-details-marker { display: none; }
+.shell-menu-icon { width: 16px; height: 16px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.shell-menu-chevron { width: 11px; height: 11px; opacity: .7; }
+.app-menu > details > .menu-panel { top: calc(100% + 5px); }
+.help-copy { padding: 10px 12px; margin: 0; max-width: 290px; line-height: 1.5; }
+.menu-panel { position: absolute; z-index: 30; min-width: 245px; padding: 5px; font: 13px 'Segoe UI', Tahoma, sans-serif; background: #fafcfb; color: #202c26; border: 1px solid #aebdb4; border-radius: 7px; box-shadow: 0 8px 24px #0005; }
+.menu-panel button { appearance: none; display: block; width: 100%; min-height: 33px; text-align: left; padding: 7px 10px; font: inherit; line-height: 18px; background: transparent; border: 0; border-radius: 4px; }
+.menu-panel button:hover:not(:disabled) { background: #e3eee7; }
+.menu-panel button:active:not(:disabled) { background: #d5e4da; }
+.menu-panel button:focus-visible, #contextNew > summary:focus-visible { outline: 2px solid #517b65; outline-offset: -2px; background: #e3eee7; }
+.menu-panel button:disabled { color: #65756c; opacity: .65; }
+.menu-panel hr { border: 0; border-top: 1px solid #d8e0db; margin: 4px 5px; }
+#contextNew > summary { padding: 6px 10px; font-weight: 600; cursor: pointer; border-radius: 4px; }
+#newMenu > .menu-panel { top: calc(100% + 4px); left: 0; }
+.page-footer { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 3px; color: #85928c; font-size: 11px; line-height: 1.2; letter-spacing: .01em; }
+/* 2. Recognizable Active Directory workspace */
+.aduc-window { min-height: 0; min-width: 0; margin: 0 14px 14px; display: flex; flex-direction: column; overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f0f0; color: #111; border: 1px solid #7f9b8e; border-radius: 7px; box-shadow: 0 8px 24px #0007,0 0 18px rgba(68,164,122,.09); }
+.titlebar { min-height: 32px; background: linear-gradient(180deg,#286991,#205777); color: white; padding: 7px 10px; border-radius: 6px 6px 0 0; display: flex; align-items: center; gap: 7px; box-shadow: inset 0 -1px rgba(0,0,0,.18); }
+.empty button, .dialog-actions button { min-height: 29px; padding: 5px 11px; color: #222; font-weight: 600; border: 1px solid #afb8b3; border-radius: 3px; background: #fafbfa; list-style: none; cursor: pointer; }
+.empty button:hover, .dialog-actions button:hover { background: #e7eeea; border-color: #879e90; }
+.empty button:active, .dialog-actions button:active { background: #dbe5df; }
+.toolbar { display: flex; align-items: center; gap: 7px; min-height: 47px; padding: 5px 8px; background: linear-gradient(180deg,#123e32,#0d3128); border-bottom: 1px solid #315448; font-family: 'Segoe UI', Inter, Arial, sans-serif; }
+.command { appearance: none; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; gap: 7px; height: 35px; padding: 0 12px; white-space: nowrap; color: #e7f3ec; background: rgba(5,29,22,.82); border: 1px solid rgba(116,207,167,.28); border-radius: 7px; font: 600 13px 'Segoe UI', Inter, Arial, sans-serif; line-height: 1; list-style: none; cursor: pointer; box-shadow: inset 0 1px rgba(255,255,255,.025); }
+.command--primary { background: rgba(12,49,37,.94); border-color: rgba(126,224,181,.42); }
+.command--utility { color: #e1eee7; background: rgba(5,29,22,.82); }
+.command:hover:not(:disabled):not([aria-disabled="true"]) { color: #fff; background: rgba(28,79,61,.96); border-color: rgba(126,224,181,.48); }
+.command:active:not(:disabled):not([aria-disabled="true"]), details[open] > .command:not([aria-disabled="true"]) { background: rgba(3,22,16,.98); border-color: rgba(126,224,181,.36); }
+.command:disabled, .command[aria-disabled="true"] { color: #afc7ba; background: rgba(5,29,22,.62); border-color: rgba(116,207,167,.16); opacity: .62; cursor: default; }
+.command:focus-visible { outline: 2px solid #9cddc0; outline-offset: -3px; }
+.command-icon { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.command-chevron { width: 12px; height: 12px; opacity: .75; margin-left: 2px; }
+.command-separator { width: 1px; height: 20px; margin-inline: 3px; background: rgba(182,229,208,.18); flex-shrink: 0; }
+.command-utilities { display: flex; align-items: center; gap: 6px; }
+.workspace { flex: 1; min-height: 0; overflow: auto; background: #fdfefd; padding: 7px; }
+.tree { min-width: max-content; }
+.tree-item { display: flex; align-items: center; gap: 5px; height: 25px; white-space: nowrap; user-select: none; cursor: default; }
+.tree-item:hover { background: #e8f4ff; }
+.tree-item.selected { background: #cce8ff; outline: 1px solid #99d1ff; outline-offset: -1px; }
+.tree-item:focus-visible { outline: 1px dotted #111; outline-offset: -2px; }
+.expander { width: 16px; height: 16px; padding: 0; border: 0; background: transparent; font-size: 10px; color: #555; }
+.icon { display: inline-block; width: 16px; height: 13px; background: #f8d878; border: 1px solid #b3913c; position: relative; flex-shrink: 0; margin-right: 2px; }
+.icon::before { content: ''; position: absolute; top: -4px; left: 0; width: 7px; height: 3px; background: #f8d878; border: 1px solid #b3913c; border-bottom: 0; }
+.icon.ou::after { content: ''; position: absolute; left: 4px; top: 3px; width: 5px; height: 4px; border: 1px solid #7b642b; }
+.icon.domain { background: #d3e9fa; border-color: #3c81b3; }
+.icon.domain::before { background: #79b6df; border-color: #3c81b3; }
+.icon.svg-icon { width: 16px; height: 16px; border: 0; background: transparent center / 16px 16px no-repeat; vertical-align: middle; }
+.icon.svg-icon::before, .icon.svg-icon::after { content: none; }
+.menu-panel .new-command { display: flex; gap: 8px; align-items: center; }
+.object-type { color: #666; font-size: 11px; margin-left: 12px; }
+.statusbar { min-height: 27px; border-top: 1px solid #c9cecb; border-radius: 0 0 6px 6px; padding: 5px 8px; font-size: 12px; display: flex; gap: 20px; background: #f0f2f1; color: #56615b; }
+#objectCount { flex-shrink: 0; }
+#selectionInfo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty { padding: 24px 18px; color: #555; }
+.empty h2 { color: #222; font-size: 17px; margin-top: 0; }
+.empty button { padding: 6px 15px; }
+#contextMenu { position: fixed; margin: 0; }
+[hidden] { display: none !important; }
+/* 3. ADUC-style dialogs and validation */
+dialog { padding: 0; width: 440px; max-width: calc(100vw - 24px); color: #111; background: #f0f0f0; border: 1px solid #0078d4; box-shadow: 0 12px 45px #0006; }
+dialog::backdrop { background: #001a1470; }
+.dialog-title { margin: 0; padding: 8px 12px; background: #0078d4; color: white; font-weight: 400; font-size: 13px; display: flex; gap: 8px; align-items: center; }
+.dialog-body { padding: 18px; max-height: calc(100dvh - 130px); overflow-y: auto; }
+.location { margin: 0 0 16px; overflow-wrap: anywhere; color: #555; }
+.field { display: block; margin-bottom: 6px; }
+input[type="text"] { width: 100%; padding: 6px; border: 1px solid #888; background: white; }
+.check { display: flex; gap: 6px; align-items: center; margin-top: 15px; }
+.error { min-height: 18px; margin: 12px 0 0; color: #a21b1b; }
+.dialog-actions { border-top: 1px solid #ccc; padding: 10px 14px; display: flex; justify-content: flex-end; gap: 7px; }
+.dialog-actions button { min-width: 80px; padding: 5px 12px; }
+.form-field { display: block; margin: 0 0 12px; }
+.form-field > span { display: block; margin-bottom: 5px; }
+.name-parts { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 8px; }
+.account-parts { display: flex; align-items: center; gap: 5px; }
+.account-parts input { min-width: 0; }
+.account-parts .domain-part { flex: 0 1 48%; background: #e7e7e7; }
+.group-options { display: flex; gap: 12px; margin-bottom: 8px; }
+.group-options fieldset { flex: 1; border: 1px solid #aaa; }
+.group-options label { display: block; margin: 7px 0; }
+.properties-dialog { width: 560px; }
+.properties-dialog .dialog-title { background: #123e32; }
+.property-tabs { display: flex; gap: 2px; padding: 10px 14px 0; border-bottom: 1px solid #aeb8b2; background: #dfe5e1; }
+.property-tab { min-height: 30px; padding: 5px 15px; color: #26352d; background: #d7ded9; border: 1px solid #aeb8b2; border-bottom: 0; border-radius: 4px 4px 0 0; }
+.property-tab[aria-selected="true"] { position: relative; top: 1px; background: #f0f0f0; font-weight: 600; }
+.property-panel { min-height: 260px; }
+.property-panel[hidden] { display: none; }
+.property-panel input[readonly] { color: #4d5752; background: #e4e7e5; }
+.property-panel select { width: 100%; padding: 6px; border: 1px solid #888; background: white; }
+.property-check { display: flex; gap: 7px; align-items: center; margin: 17px 0 6px; }
+.property-note { margin: 2px 0 14px; color: #56615b; line-height: 1.45; }
+.tree-item input.inline-rename { width: 240px; height: 23px; padding: 1px 4px; border: 1px solid #0078d4; }
+.rename-error { color: #a21b1b; font-size: 12px; margin-left: 8px; }
+.move-tree { height: 310px; overflow: auto; border: 1px solid #aeb8b2; background: #fdfefd; padding: 6px; color: #111; }
+.move-tree .destination { display: flex; align-items: center; gap: 5px; padding: 2px 4px; border: 0; background: transparent; color: inherit; text-align: left; white-space: nowrap; }
+.move-tree .tree-item { width: max-content; min-width: 100%; }
+#confirmDelete { color: #8c2424; border-color: #b87e7e; background: #faeeee; }
+#confirmDelete:hover { background: #f2dddd; }
+.delete-warning { margin: 0 0 12px; line-height: 1.5; overflow-wrap: anywhere; }
+/* 4. Responsive shell retains a tall, internally scrolling tree. */
+@media (max-width: 980px) { .page { width: min(92vw,1500px); } .app { height: min(88dvh,900px); } }
+@media (max-width: 650px) { .page { width: calc(100% - 20px); padding-top: 10px; } .app { min-height: 460px; max-height: calc(100dvh - 42px); border-radius: 10px; } .app-header { gap: 12px; padding: 12px 14px 9px; } h1 { font-size: clamp(32px,10vw,43px); } .brand-mark { width: 36px; height: 36px; } .brand-divider { height: 39px; } .purpose { max-width: 145px; font-size: 9px; line-height: 1.55; letter-spacing: .08em; text-align: right; white-space: normal; } .purpose-chevron { margin-inline: 3px; } .app-menu { padding-inline: 12px; overflow-x: auto; } .app-menu > details > summary, .menu-placeholder { padding-inline: 10px; } .help-menu .menu-panel { left: auto; right: 0; } .aduc-window { margin: 0 9px 9px; } .toolbar { flex-wrap: wrap; } .object-type { display: none; } .page-footer { font-size: 10px; } }
+@media (max-height: 700px) { .page { padding-top: 9px; padding-bottom: 6px; gap: 6px; } .app { height: calc(100dvh - 34px); min-height: 0; } .app-header { padding-top: 9px; padding-bottom: 7px; } h1 { font-size: clamp(34px,3.3vw,47px); } .brand-mark { width: 38px; height: 38px; } .brand-divider { height: 41px; } .app-menu { min-height: 46px; padding-top: 5px; padding-bottom: 6px; } .page-footer { font-size: 10px; } }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="app">
+  <header class="app-header"><div class="brand">
+    <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect x="19" y="4" width="10" height="10" rx="2"/><rect x="4" y="34" width="10" height="10" rx="2"/><rect x="19" y="34" width="10" height="10" rx="2"/><rect x="34" y="34" width="10" height="10" rx="2"/><path d="M24 14v10M9 34V24h30v10M24 24v10"/></svg>
+    <span class="brand-divider" aria-hidden="true"></span><h1><span class="brand-get">GET</span> <span class="brand-active">ACTIVE</span></h1>
+  </div><p class="purpose">SIMULATE <span class="purpose-chevron" aria-hidden="true">›</span> VALIDATE <span class="purpose-chevron" aria-hidden="true">›</span> DEPLOY</p></header>
+  <nav class="app-menu" aria-label="Application">
+    <details id="fileMenu"><summary><svg class="shell-menu-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 2.5h7l5 5v10H4zM11 2.5v5h5"/></svg><span>File</span><svg class="shell-menu-icon shell-menu-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary><div class="menu-panel">
+      <button id="newForest">New Forest…</button><hr>
+      <button id="openDesign">Open Design…    Ctrl+O</button>
+      <button id="saveDesign" disabled>Save Design    Ctrl+S</button>
+      <button id="saveDesignAs" disabled>Save Design As…    Ctrl+Shift+S</button><hr>
+      <button id="importLegacy">Import Legacy Design…</button>
+      <button id="loadExample">Load Example</button><hr>
+      <button id="exportImage" disabled>Export as Image</button>
+    </div></details>
+    <details id="actionMenu"><summary><svg class="shell-menu-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4"/></svg><span>Action</span><svg class="shell-menu-icon shell-menu-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary><div class="menu-panel"><button id="actionProperties" disabled>Properties    Alt+Enter</button></div></details>
+    <button class="menu-placeholder" type="button" disabled title="Use Expand All and Collapse All in the workspace"><svg class="shell-menu-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="11" rx="1.5"/><path d="M7 17h6M10 14.5V17"/></svg><span>View</span><svg class="shell-menu-icon shell-menu-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></button>
+    <details class="help-menu"><summary><svg class="shell-menu-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M7.8 7.4a2.4 2.4 0 1 1 3 2.3c-.7.3-.8.8-.8 1.5M10 14.3v.1"/></svg><span>Help</span><svg class="shell-menu-icon shell-menu-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary><div class="menu-panel"><p class="help-copy">Get Active is a local directory design simulator. It does not connect to or modify Active Directory. Select a domain, container or OU and use New to create objects. Save your design to keep your work.</p></div></details>
+  </nav>
+  <main class="aduc-window">
+    <div class="titlebar"><span id="titleIcon" aria-hidden="true"></span>Active Directory Users and Computers <span id="projectState" style="margin-left:auto;font-size:11px">Simulated</span></div>
+    <div class="toolbar" aria-label="Directory actions">
+      <details id="newMenu"><summary class="command command--primary" aria-disabled="true"><svg class="command-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 3v10M3 8h10"/></svg><span>New</span><svg class="command-icon command-chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="m4 6 4 4 4-4"/></svg></summary><div id="toolbarNewItems" class="menu-panel"></div></details>
+      <span class="command-separator" aria-hidden="true"></span>
+      <button id="ouShortcut" class="command" type="button" disabled><span class="icon ou" aria-hidden="true"></span>Organizational Unit</button>
+      <span class="command-separator" aria-hidden="true"></span>
+      <div class="command-utilities" role="group" aria-label="Tree expansion">
+        <button id="expandAll" class="command command--utility" disabled><svg class="command-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v12M5 5l3-3 3 3M5 11l3 3 3-3M2 2v12M14 2v12"/></svg>Expand All</button>
+        <button id="collapseAll" class="command command--utility" disabled><svg class="command-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1v5M5 3l3 3 3-3M8 15v-5M5 13l3-3 3 3M2 2v12M14 2v12"/></svg>Collapse All</button>
+      </div>
+    </div>
+    <div class="workspace"><div id="tree" class="tree" role="tree" aria-label="Simulated directory"></div>
+      <div id="empty" class="empty"><h2>Design your directory.</h2><p>Create a forest to start with its root domain and six baseline objects.</p><button id="emptyNew">New Forest…</button></div>
+    </div>
+    <div class="statusbar"><span id="objectCount">0 objects</span><span id="selectionInfo" role="status">Ready</span></div>
+  </main>
+</div>
+<footer class="page-footer"><span>Simulator only · Local workspace</span><span>Get Active v1.0</span></footer>
+</div>
+<div id="contextMenu" class="menu-panel" hidden><details id="contextNew"><summary>New ▸</summary><div id="contextNewItems"></div></details><hr id="contextPropertiesSeparator"><button id="contextProperties" type="button">Properties</button></div>
+<input id="projectFileInput" type="file" accept=".getactive,application/json" hidden>
+<input id="legacyFileInput" type="file" accept=".md,.txt,text/markdown,text/plain" hidden>
+<dialog id="objectDialog" aria-labelledby="dialogTitle">
+  <form id="objectForm">
+    <h2 class="dialog-title"><span id="dialogIcon" aria-hidden="true"></span><span id="dialogTitle">New Forest</span></h2>
+    <div class="dialog-body"><p id="dialogLocation" class="location"></p>
+      <div id="simpleName"><label id="nameLabel" class="field" for="objectName">Root domain name</label>
+      <input id="objectName" type="text" autocomplete="off" required aria-describedby="dialogError"></div>
+      <div id="creationFields"></div>
+      <label id="protectionField" class="check"><input id="protection" type="checkbox">Protect container from accidental deletion</label>
+      <p id="dialogError" class="error" role="alert"></p>
+    </div>
+    <div class="dialog-actions"><button type="submit">Create</button><button type="button" id="cancelDialog">Cancel</button></div>
+  </form>
+</dialog>
+<dialog id="propertiesDialog" class="properties-dialog" aria-labelledby="propertiesTitle">
+  <form id="propertiesForm">
+    <h2 class="dialog-title"><span id="propertiesIcon" aria-hidden="true"></span><span id="propertiesTitle">Properties</span></h2>
+    <div id="propertiesTabs" class="property-tabs" role="tablist" aria-label="Object properties"></div>
+    <div class="dialog-body"><div id="propertiesPanels"></div><p id="propertiesError" class="error" role="alert"></p></div>
+    <div class="dialog-actions"><button type="submit">OK</button><button type="button" id="cancelProperties">Cancel</button></div>
+  </form>
+</dialog>
+<dialog id="moveDialog" class="properties-dialog" aria-labelledby="moveTitle">
+  <form id="moveForm">
+    <h2 id="moveTitle" class="dialog-title">Move</h2>
+    <div class="dialog-body"><p id="moveObject" class="location"></p><p>Select the destination for this object:</p>
+      <div id="moveTree" class="move-tree" role="tree" aria-label="Move destination"></div>
+      <p id="moveError" class="error" role="alert"></p>
+    </div>
+    <div class="dialog-actions"><button id="moveOK" type="submit" disabled>OK</button><button id="cancelMove" type="button">Cancel</button></div>
+  </form>
+</dialog>
+<dialog id="deleteDialog" class="properties-dialog" aria-labelledby="deleteTitle" aria-describedby="deleteMessage">
+  <h2 id="deleteTitle" class="dialog-title">Delete Object</h2>
+  <div class="dialog-body"><p id="deleteMessage" class="delete-warning"></p><p id="deleteWarning" class="delete-warning"></p></div>
+  <div class="dialog-actions"><button id="cancelDelete" type="button" autofocus>Cancel</button><button id="confirmDelete" type="button">Delete</button></div>
+</dialog>
+<dialog id="unsavedDialog" aria-labelledby="unsavedTitle">
+  <h2 id="unsavedTitle" class="dialog-title">Unsaved changes</h2>
+  <div class="dialog-body"><p class="location">Save your current Get Active design before replacing it?</p></div>
+  <div class="dialog-actions"><button type="button" id="unsavedSave">Save</button><button type="button" id="unsavedDiscard">Don't Save</button><button type="button" id="unsavedCancel">Cancel</button></div>
+</dialog>
+<script>
+'use strict';
+/* 1. Directory model. No network, LDAP, or external runtime. */
+const $ = id => document.getElementById(id);
+const state = { roots: [], selectedId: null, dirty: false };
+const projectMeta = { name: 'Untitled', suggestedFilename: 'get-active.getactive', currentFilename: null, hasSaved: false, fileHandle: null };
+const APPLICATION_TITLE = 'Get Active';
+const labels = { domain: 'Domain', ou: 'Organizational Unit', container: 'Container', user: 'User', computer: 'Computer', group: 'Group', inetOrgPerson: 'InetOrgPerson', contact: 'Contact', printer: 'Printer', share: 'Shared Folder', policy: 'Group Policy' };
+let nextId = 0;
+function updateProjectState() {
+    $('projectState').textContent = state.dirty ? 'Simulated · Unsaved' : 'Simulated';
+    document.title = (state.dirty ? '* ' : '') + APPLICATION_TITLE;
+}
+function setDirty(value) { state.dirty = Boolean(value); updateProjectState(); }
+function safeFilename(value) {
+    let name = String(value || 'get-active').trim().replace(/\.getactive$/i, '').replace(/[<>:"/\\|?*\u0000-\u001f]/g, '-');
+    name = name.replace(/\.+$/g, '').replace(/[.\s_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 180) || 'get-active';
+    if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(name)) name = 'get-active-' + name;
+    return name + '.getactive';
+}
+function resetProjectMeta(name, { currentFilename = null, hasSaved = false, fileHandle = null } = {}) {
+    projectMeta.name = String(name || 'Untitled');
+    projectMeta.suggestedFilename = safeFilename(projectMeta.name);
+    projectMeta.currentFilename = currentFilename;
+    projectMeta.hasSaved = hasSaved;
+    projectMeta.fileHandle = fileHandle;
+}
+function makeObject(name, type, parentId = null, protectedValue = false) {
+    let id;
+    do id = 'object-' + (++nextId); while (findObject(id));
+    return { id, name, type, objectType: type, parentId, children: [], defaultObject: false,
+        protectedFromAccidentalDeletion: protectedValue, expanded: true };
+}
+function allObjects(nodes = state.roots) {
+    return nodes.flatMap(node => [node, ...allObjects(node.children)]);
+}
+function findObject(id) { return allObjects().find(node => node.id === id); }
+function validOUParent(node) { return Boolean(node && ['domain', 'ou'].includes(node.type)); }
+function domainOf(node) {
+    while (node && node.type !== 'domain') node = findObject(node.parentId);
+    return node || null;
+}
+function canCreate(parent, type) {
+    if (!parent || !CREATION_TYPES.includes(type)) return false;
+    return canPlace(parent, type);
+}
+function canPlace(parent, type) {
+    if (!parent || !['ou','container','user','inetOrgPerson','computer','group','contact','printer','share'].includes(type)) return false;
+    if (type === 'ou') return validOUParent(parent);
+    return ['domain', 'container', 'ou'].includes(parent.type) && Boolean(domainOf(parent));
+}
+// This is a simulated NetBIOS label, not a lookup of a real domain setting.
+function shortDomain(domain) { return domain.name.split('.')[0].slice(0, 15).toUpperCase(); }
+function escapeDN(value) {
+    return value.replace(/[, +"\\<>;=\u0000]/g, (character, index) => {
+        if (character === ' ' && index !== 0 && index !== value.length - 1) return character;
+        return character === '\u0000' ? '\\00' : '\\' + character;
+    }).replace(/^#/, '\\#');
+}
+function distinguishedName(node) {
+    if (node.type === 'domain') return node.name.split('.').map(label => 'DC=' + escapeDN(label)).join(',');
+    const parent = findObject(node.parentId);
+    return (node.type === 'ou' ? 'OU=' : 'CN=') + escapeDN(node.name) + (parent ? ',' + distinguishedName(parent) : '');
+}
+function synchronizeIdGenerator() {
+    for (const node of allObjects()) {
+        const match = /^object-(\d+)$/.exec(node.id);
+        if (match) { const value = Number(match[1]); if (Number.isSafeInteger(value)) nextId = Math.max(nextId, value); }
+    }
+}
+const DEFAULT_DIRECTORY_OBJECTS = ['Builtin','Computers','Domain Controllers','ForeignSecurityPrincipals','Managed Service Accounts','Users'];
+function isDefaultObject(node) {
+    if (!node) return false;
+    if (node.defaultObject === true) return true;
+    if (node.defaultObject === false) return false;
+    const parent = findObject(node.parentId);
+    return parent?.type === 'domain' && DEFAULT_DIRECTORY_OBJECTS.includes(node.name) &&
+        node.type === (node.name === 'Domain Controllers' ? 'ou' : 'container');
+}
+function canRename(node) {
+    return Boolean(node && ['ou','container','user','inetOrgPerson','computer','group','contact','printer','share'].includes(node.type) && !isDefaultObject(node));
+}
+function validateDirectoryName(type, parent, name, currentId = null) {
+    if (!name || name.length > 64 || /[\u0000-\u001f\u007f]/.test(name)) throw new Error('Use 1–64 characters without control characters.');
+    if (type === 'computer' && !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(name)) throw new Error('Computer names must use 1–63 letters, digits or internal hyphens.');
+    if (!parent) throw new Error('The object has no valid parent.');
+    if (parent.children.some(child => child.id !== currentId && child.name.toLowerCase() === name.toLowerCase())) throw new Error('An object with this name already exists in this location.');
+}
+let inlineRename = null;
+function finishInlineRename(cancel = false) {
+    const editing = inlineRename; if (!editing) return true;
+    if (!cancel) {
+        try {
+            const changed = commitObjectEdits(findObject(editing.id), editing.input.value);
+            if (changed) setDirty(true);
+        } catch (error) {
+            editing.error.textContent = error.message; editing.input.setAttribute('aria-invalid', 'true');
+            queueMicrotask(() => { if (inlineRename === editing) editing.input.focus(); }); return false;
+        }
+    }
+    inlineRename = null; render(true); return true;
+}
+function beginInlineRename() {
+    const node = findObject(state.selectedId); if (!canRename(node) || document.querySelector('dialog[open]')) return;
+    if (inlineRename) { inlineRename.input.focus(); return; }
+    closeMenus(); render(true);
+    const host = [...$('tree').querySelectorAll('[data-object-name]')].find(element => element.dataset.objectName === node.id);
+    if (!host) return;
+    const input = document.createElement('input'); input.type = 'text'; input.className = 'inline-rename'; input.value = node.name;
+    input.maxLength = node.type === 'computer' ? 63 : 64; input.setAttribute('aria-label', 'Rename ' + node.name);
+    const error = document.createElement('span'); error.className = 'rename-error'; error.setAttribute('role', 'alert');
+    inlineRename = { id: node.id, input, error }; host.replaceChildren(input, error);
+    host.onclick = host.ondblclick = event => event.stopPropagation();
+    input.onclick = input.ondblclick = event => event.stopPropagation();
+    input.onkeydown = event => {
+        event.stopPropagation();
+        if (event.key === 'Enter' || event.key === 'Escape') { event.preventDefault(); finishInlineRename(event.key === 'Escape'); }
+    };
+    input.onblur = () => { if (inlineRename?.input === input) finishInlineRename(); };
+    input.focus(); input.select();
+}
+document.addEventListener('pointerdown', event => {
+    if (inlineRename && !event.target.closest('[data-object-name]') && !finishInlineRename()) { event.preventDefault(); event.stopImmediatePropagation(); }
+}, true);
+function replaceRoots(roots, { selectedId = roots[0]?.id ?? null, dirty = true, name = roots[0]?.name || 'Untitled', currentFilename = null, hasSaved = false } = {}) {
+    state.roots = roots; state.selectedId = selectedId; synchronizeIdGenerator();
+    resetProjectMeta(name, { currentFilename, hasSaved }); setDirty(dirty); render();
+}
+/* 1a. Compact, original offline SVG artwork. OU retains its Gate 1 CSS icon.
+   The same SVG sources also serve PNG export; no remote assets are loaded. */
+const ICON_ART = {
+    domain: '<circle cx="8" cy="8" r="7" fill="#c8eafa" stroke="#28668b"/><ellipse cx="8" cy="8" rx="3" ry="7" fill="none" stroke="#28668b"/><path d="M1 8h14M3 4h10M3 12h10" stroke="#28668b"/>',
+    container: '<path d="M1 4V2h6l2 2h6v10H1z" fill="#f8d878" stroke="#b3913c"/>',
+    ou: '<path d="M1 4V2h6l2 2h6v10H1z" fill="#f8d878" stroke="#b3913c"/><rect x="5" y="7" width="5" height="4" fill="none" stroke="#7b642b"/>',
+    user: '<path d="M2 15v-3c0-4 12-4 12 0v3z" fill="#467fae" stroke="#294863"/><circle cx="8" cy="5" r="3.5" fill="#f0cda4" stroke="#815f3b"/><path d="M5 3c1-3 5-2 6 1" fill="none" stroke="#80623c"/>',
+    computer: '<rect x="1" y="1" width="14" height="10" rx="1" fill="#c7ccd1" stroke="#515960"/><rect x="3" y="3" width="10" height="6" fill="#6eaccb" stroke="#3e6478"/><path d="M6 11v2h4v-2M3 15h10" fill="#b4bac0" stroke="#515960"/>',
+    group: '<path d="M1 12c0-4 8-4 8 0v2H1zM8 12c0-4 7-4 7 0v2H8z" fill="#668dba" stroke="#345575"/><circle cx="4.5" cy="5" r="2.5" fill="#ecc79d" stroke="#815f3b"/><circle cx="11.5" cy="5" r="2.5" fill="#ecc79d" stroke="#815f3b"/><path d="M4 15v-3c0-3 8-3 8 0v3z" fill="#3b658e" stroke="#294863"/><circle cx="8" cy="8" r="2.5" fill="#f3d5b1" stroke="#815f3b"/>',
+    inetOrgPerson: '<path d="M1 15v-3c0-4 10-4 10 0v3z" fill="#4f8a6d" stroke="#28533f"/><circle cx="6" cy="5" r="3.5" fill="#f0cda4" stroke="#815f3b"/><circle cx="12" cy="11" r="3.5" fill="#c8eafa" stroke="#28668b"/><path d="M8.5 11h7M12 7.5c1.5 1.5 1.5 5.5 0 7M12 7.5c-1.5 1.5-1.5 5.5 0 7" fill="none" stroke="#28668b" stroke-width=".8"/>',
+    contact: '<rect x="1" y="2" width="14" height="12" fill="#fffde9" stroke="#8c876a"/><circle cx="5" cy="6" r="2" fill="#ecc79d" stroke="#815f3b"/><path d="M2 12v-1c0-3 6-3 6 0v1z" fill="#74908b"/><path d="M10 5h3M10 8h3M10 11h3" stroke="#6a777e"/>',
+    printer: '<path d="M4 5V1h8v4M4 12v3h8v-3" fill="#fff" stroke="#555"/><rect x="1" y="5" width="14" height="7" fill="#bbb" stroke="#555"/><path d="M4 10h8" stroke="#555"/>',
+    share: '<path d="M1 4V2h6l2 2h6v10H1z" fill="#f8d878" stroke="#b3913c"/><path d="M4 10h8m-3-3 3 3-3 3" fill="none" stroke="#326b9d" stroke-width="2"/>',
+    policy: '<rect x="3" y="1" width="10" height="14" fill="#fff" stroke="#777"/><path d="M5 5h6M5 8h6M5 11h6" stroke="#5c7996"/>'
+};
+function iconURL(type) {
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">' + (ICON_ART[type] || ICON_ART.policy) + '</svg>');
+}
+function applyIcon(element, type) {
+    element.className = 'icon ' + type + (type === 'ou' ? '' : ' svg-icon');
+    element.style.backgroundImage = type === 'ou' ? '' : 'url("' + iconURL(type) + '")';
+    element.setAttribute('aria-hidden', 'true');
+}
+function createIcon(type) { const icon = document.createElement('span'); applyIcon(icon, type); return icon; }
+/* 1b. Shared creation registry and placement policy. */
+const CREATION_TYPES = ['user', 'computer', 'group', 'inetOrgPerson', 'ou', 'printer', 'share', 'contact'];
+const creationCommands = [];
+function buildNewMenus() {
+    for (const [hostId, prefix] of [['toolbarNewItems', 'new'], ['contextNewItems', 'context']]) {
+        for (const type of CREATION_TYPES) {
+            const command = document.createElement('button');
+            command.id = prefix + (type === 'ou' ? 'OU' : type[0].toUpperCase() + type.slice(1));
+            command.type = 'button'; command.className = 'new-command';
+            const text = document.createElement('span'); text.textContent = labels[type] + '…';
+            command.append(createIcon(type), text); command.onclick = () => showDialog(type);
+            $(hostId).append(command); creationCommands.push({ command, type });
+        }
+    }
+}
+function updateNewCommands() {
+    const selected = findObject(state.selectedId);
+    $('ouShortcut').disabled = !canCreate(selected, 'ou');
+    creationCommands.forEach(({command, type}) => command.disabled = !canCreate(selected, type));
+    $('newMenu').querySelector('summary').setAttribute('aria-disabled', !CREATION_TYPES.some(type => canCreate(selected, type)));
+}
+/* 2. Tree rendering and selection. Text is inserted as text, never HTML. */
+function render(focusSelection = false) {
+    const tree = $('tree'); tree.replaceChildren();
+    function addNodes(nodes, host, level) {
+        for (const node of nodes) {
+            const item = document.createElement('div');
+            item.setAttribute('role', 'treeitem'); item.dataset.id = node.id;
+            item.setAttribute('aria-level', level + 1);
+            item.setAttribute('aria-selected', node.id === state.selectedId);
+            item.tabIndex = node.id === state.selectedId ? 0 : -1;
+            const row = document.createElement('div');
+            row.className = 'tree-item' + (node.id === state.selectedId ? ' selected' : '');
+            row.style.paddingLeft = (level * 20) + 'px';
+            const expand = document.createElement('button'); expand.className = 'expander'; expand.tabIndex = -1;
+            expand.textContent = node.children.length ? (node.expanded ? '▼' : '▶') : '';
+            expand.disabled = !node.children.length;
+            expand.setAttribute('aria-label', (node.expanded ? 'Collapse ' : 'Expand ') + node.name);
+            expand.onclick = event => { event.stopPropagation(); node.expanded = !node.expanded; state.selectedId = node.id; render(true); };
+            const icon = createIcon(node.type);
+            const name = document.createElement('span'); name.textContent = node.name; name.dataset.objectName = node.id;
+            const type = document.createElement('span'); type.className = 'object-type'; type.textContent = labels[node.type] || node.type;
+            row.append(expand, icon, name, type); item.append(row); host.append(item);
+            row.onclick = () => { state.selectedId = node.id; render(true); };
+            row.ondblclick = () => { node.expanded = !node.expanded; render(true); };
+            row.oncontextmenu = event => { event.preventDefault(); state.selectedId = node.id; render(true); showContext(event.clientX, event.clientY); };
+            item.onkeydown = event => { if (event.target === item) treeKey(event, node); };
+            if (node.children.length) {
+                item.setAttribute('aria-expanded', node.expanded);
+                if (node.expanded) { const group = document.createElement('div'); group.setAttribute('role', 'group'); item.append(group); addNodes(node.children, group, level + 1); }
+            }
+        }
+    }
+    addNodes(state.roots, tree, 0);
+    $('empty').hidden = !!state.roots.length;
+    $('objectCount').textContent = allObjects().length + ' objects';
+    const selected = findObject(state.selectedId);
+    $('selectionInfo').textContent = selected ? (labels[selected.type] || selected.type) + ' · ' + distinguishedName(selected) : 'Ready';
+    updateNewCommands();
+    $('actionProperties').disabled = !selected;
+    $('actionRename').disabled = !canRename(selected);
+    $('actionMove').disabled = !canMove(selected);
+    $('actionDelete').disabled = !canDelete(selected);
+    for (const id of ['saveDesign', 'saveDesignAs', 'exportImage', 'expandAll', 'collapseAll']) $(id).disabled = !state.roots.length;
+    updateProjectState();
+    if (focusSelection) tree.querySelector('[tabindex="0"]')?.focus({ preventScroll: true });
+}
+function treeKey(event, node) {
+    const visible = [...$('tree').querySelectorAll('[role="treeitem"]')];
+    const index = visible.findIndex(item => item.dataset.id === node.id);
+    let target;
+    if (event.key === 'ArrowDown') target = visible[index + 1];
+    else if (event.key === 'ArrowUp') target = visible[index - 1];
+    else if (event.key === 'Home') target = visible[0];
+    else if (event.key === 'End') target = visible.at(-1);
+    else if (event.key === 'ArrowRight') { if (!node.expanded) node.expanded = true; else if (node.children.length) state.selectedId = node.children[0].id; }
+    else if (event.key === 'ArrowLeft') { if (node.expanded && node.children.length) node.expanded = false; else if (node.parentId) state.selectedId = node.parentId; }
+    else if (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10')) { event.preventDefault(); const rect = event.target.getBoundingClientRect(); showContext(rect.left + 30, rect.top + 25); return; }
+    else return;
+    event.preventDefault(); if (target) state.selectedId = target.dataset.id; render(true);
+    $('tree').querySelector('[tabindex="0"]')?.scrollIntoView({ block: 'nearest' });
+}
+/* 3. Shared creation dialogs. Fields are built from local definitions. */
+let dialogMode = 'forest', dialogParentId = null, returnFocus;
+const dialogInputs = new Map();
+function addTextField(host, key, label, {required = false, maxLength = 64, value = '', readOnly = false} = {}) {
+    const wrapper = document.createElement('label'); wrapper.className = 'form-field';
+    const caption = document.createElement('span'); caption.textContent = label;
+    const input = document.createElement('input'); input.id = 'field-' + key; input.type = 'text';
+    input.autocomplete = 'off'; input.required = required; input.maxLength = maxLength;
+    input.value = value; input.readOnly = readOnly; input.setAttribute('aria-describedby', 'dialogError');
+    wrapper.append(caption, input); host.append(wrapper); dialogInputs.set(key, input); return input;
+}
+function addAccountField(host, key, label, prefix, suffix, maxLength) {
+    const wrapper = document.createElement('div'); wrapper.className = 'form-field';
+    const caption = document.createElement('label'); caption.textContent = label; caption.htmlFor = 'field-' + key;
+    const row = document.createElement('div'); row.className = 'account-parts';
+    if (prefix) { const text = document.createElement('span'); text.textContent = prefix; row.append(text); }
+    const input = document.createElement('input'); input.id = 'field-' + key; input.type = 'text';
+    input.required = true; input.maxLength = maxLength; input.autocomplete = 'off'; input.setAttribute('aria-describedby', 'dialogError');
+    row.append(input); dialogInputs.set(key, input);
+    if (suffix) { const text = document.createElement('input'); text.type = 'text'; text.className = 'domain-part'; text.value = suffix; text.readOnly = true; text.setAttribute('aria-label', 'Simulated domain'); row.append(text); }
+    wrapper.append(caption, row); host.append(wrapper); return input;
+}
+function addRadioField(host, key, title, choices, defaultValue) {
+    const fieldset = document.createElement('fieldset'); const legend = document.createElement('legend'); legend.textContent = title; fieldset.append(legend);
+    const inputs = choices.map(([value, label]) => {
+        const wrapper = document.createElement('label'); const input = document.createElement('input');
+        input.type = 'radio'; input.name = key; input.value = value; input.checked = value === defaultValue;
+        const caption = document.createElement('span'); caption.textContent = ' ' + label;
+        wrapper.append(input, caption); fieldset.append(wrapper); return input;
+    });
+    host.append(fieldset); dialogInputs.set(key, inputs);
+}
+function syncGenerated(source, target, transform = value => value) {
+    let customized = false;
+    target.addEventListener('input', () => { customized = target.value.length > 0; });
+    source.addEventListener('input', () => { if (!customized) target.value = transform(source.value); });
+}
+function personFields(host, displayLabel) {
+    const parts = document.createElement('div'); parts.className = 'name-parts'; host.append(parts);
+    const first = addTextField(parts, 'firstName', 'First name:');
+    const initials = addTextField(parts, 'initials', 'Initials:', { maxLength: 6 });
+    const last = addTextField(parts, 'lastName', 'Last name:');
+    const full = addTextField(host, 'displayName', displayLabel, {required: true});
+    let customized = false;
+    full.addEventListener('input', () => { customized = full.value.length > 0; });
+    for (const input of [first, initials, last]) input.addEventListener('input', () => {
+        if (!customized) full.value = [first.value.trim(), initials.value.trim(), last.value.trim()].filter(Boolean).join(' ').slice(0,64);
+    });
+}
+function accountPersonFields(host, domain) {
+    personFields(host, 'Full name:');
+    const logon = addAccountField(host, 'logonName', 'User logon name:', '', '@' + domain.name, 64);
+    const sam = addAccountField(host, 'samAccountName', 'User logon name (pre-Windows 2000):', shortDomain(domain) + '\\', '', 20);
+    syncGenerated(logon, sam, value => value.slice(0,20));
+}
+const dialogBuilders = {
+    user: accountPersonFields,
+    inetOrgPerson: accountPersonFields,
+    computer(host) {
+        const name = addTextField(host, 'name', 'Computer name:', {required: true, maxLength: 63});
+        const sam = addTextField(host, 'samAccountName', 'Computer name (pre-Windows 2000):', {required: true, maxLength: 15});
+        syncGenerated(name, sam, value => value.toUpperCase().slice(0,15));
+    },
+    printer(host) {
+        addTextField(host, 'name', 'Name:', {required: true});
+        addTextField(host, 'uncPath', 'UNC path:', {required: true, maxLength: 260});
+    },
+    share(host) {
+        addTextField(host, 'name', 'Name:', {required: true});
+        addTextField(host, 'networkPath', 'Network path:', {required: true, maxLength: 260});
+    },
+    group(host) {
+        const name = addTextField(host, 'name', 'Group name:', {required: true});
+        const sam = addTextField(host, 'samAccountName', 'Group name (pre-Windows 2000):', {required: true, maxLength: 256});
+        syncGenerated(name, sam);
+        const options = document.createElement('div'); options.className = 'group-options'; host.append(options);
+        addRadioField(options, 'groupScope', 'Group scope', [['domainLocal','Domain local'],['global','Global'],['universal','Universal']], 'global');
+        addRadioField(options, 'groupType', 'Group type', [['security','Security'],['distribution','Distribution']], 'security');
+    },
+    contact(host) { personFields(host, 'Display name:'); }
+};
+function readDialogValues() {
+    return Object.fromEntries([...dialogInputs].map(([key, input]) => [key, Array.isArray(input) ? input.find(item => item.checked)?.value : input.value.trim()]));
+}
+function validatePersonProperties(values, { includeFullName = false, displayFallback = '' } = {}) {
+    const properties = {};
+    for (const key of ['firstName', 'initials', 'lastName']) {
+        const value = String(values[key] || '').trim();
+        if (value.length > (key === 'initials' ? 6 : 64) || /[\u0000-\u001f\u007f]/.test(value)) throw new Error('Check the name fields for length or control characters.');
+        properties[key] = value;
+    }
+    const displayName = String(values.displayName ?? displayFallback).trim();
+    if (!displayName || displayName.length > 64 || /[\u0000-\u001f\u007f]/.test(displayName)) throw new Error('Display name must contain 1–64 characters without control characters.');
+    properties.displayName = displayName;
+    if (includeFullName) {
+        const fullName = String(values.fullName ?? displayName).trim();
+        if (!fullName || fullName.length > 64 || /[\u0000-\u001f\u007f]/.test(fullName)) throw new Error('Full name must contain 1–64 characters without control characters.');
+        properties.fullName = fullName;
+    }
+    return properties;
+}
+function validateSamAccountName(type, value, domain, { currentId = null, objectName = '', storedComputerName = false } = {}) {
+    let sam = String(value || '').trim();
+    const max = type === 'user' || type === 'inetOrgPerson' ? 20 : type === 'computer' ? 15 : 256;
+    if (type === 'computer' && storedComputerName && sam.endsWith('$')) sam = sam.slice(0, -1);
+    if (!sam || sam.length > max || /["/\\\[\]:;|=,+*?<>\u0000-\u001f\u007f]/.test(sam) || sam.endsWith('.')) throw new Error('Enter a valid pre-Windows 2000 name (1–' + max + ' characters, without account-name punctuation).');
+    if (type === 'computer') {
+        if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(objectName) || !/^[a-z0-9](?:[a-z0-9-]{0,13}[a-z0-9])?$/i.test(sam)) throw new Error('Computer names must use letters, digits and internal hyphens; the legacy name is limited to 15 characters.');
+        sam = sam.toUpperCase() + '$';
+    }
+    if (allObjects().some(node => node.id !== currentId && domainOf(node)?.id === domain.id && node.samAccountName?.toLowerCase() === sam.toLowerCase())) throw new Error('This pre-Windows 2000 account name already exists in the simulated domain.');
+    return sam;
+}
+function validateUserPrincipalName(value, domain, { currentId = null, localOnly = false } = {}) {
+    const input = String(value || '').trim();
+    const upn = localOnly ? input + '@' + domain.name : input;
+    const suffix = '@' + domain.name.toLowerCase();
+    const local = upn.toLowerCase().endsWith(suffix) ? upn.slice(0, -suffix.length) : '';
+    if (!local || local.length > 64 || /[\s@"/\\\[\]:;|=,+*?<>\u0000-\u001f\u007f]/.test(local)) throw new Error('Enter a user logon name in this simulated domain without spaces or account-name punctuation.');
+    if (allObjects().some(node => node.id !== currentId && node.userPrincipalName?.toLowerCase() === upn.toLowerCase())) throw new Error('This user logon name already exists in the design.');
+    return upn;
+}
+function validateResourcePath(type, value) {
+    const label = type === 'printer' ? 'UNC path' : 'Network path';
+    const path = String(value || '').trim();
+    if (!path || path.length > 260 || !path.startsWith('\\\\') || /[\u0000-\u001f\u007f]/.test(path)) throw new Error(label + ' must begin with \\\\ and contain no control characters.');
+    return path;
+}
+// Validation and commit are shared by all creation entry points.
+function createDirectoryObject(type, parentId, values) {
+    const parent = findObject(parentId);
+    if (!canCreate(parent, type)) throw new Error('Select an appropriate domain, container or Organizational Unit. Leaf objects cannot contain directory objects.');
+    const name = String(values.name ?? values.displayName ?? '').trim();
+    validateDirectoryName(type, parent, name);
+    const properties = {};
+    if (['user', 'inetOrgPerson', 'contact'].includes(type)) {
+        Object.assign(properties, validatePersonProperties(values, { includeFullName: type !== 'contact', displayFallback: name }));
+    }
+    const domain = domainOf(parent);
+    if (['user', 'inetOrgPerson', 'computer', 'group'].includes(type)) {
+        properties.samAccountName = validateSamAccountName(type, values.samAccountName, domain, { objectName: name });
+    }
+    if (type === 'user' || type === 'inetOrgPerson') {
+        properties.userPrincipalName = validateUserPrincipalName(values.logonName, domain, { localOnly: true });
+    }
+    if (type === 'printer' || type === 'share') {
+        const key = type === 'printer' ? 'uncPath' : 'networkPath';
+        properties[key] = validateResourcePath(type, values[key]);
+    }
+    if (type === 'group') {
+        if (!['domainLocal','global','universal'].includes(values.groupScope) || !['security','distribution'].includes(values.groupType)) throw new Error('Choose a valid group scope and type.');
+        properties.groupScope = values.groupScope; properties.groupType = values.groupType;
+    }
+    const node = makeObject(name, type, parent.id, type === 'ou' && Boolean(values.protectedFromAccidentalDeletion));
+    Object.assign(node, properties); parent.children.push(node); parent.expanded = true;
+    state.selectedId = node.id; setDirty(true); return node;
+}
+function closeMenus() { document.querySelectorAll('details').forEach(menu => menu.open = false); $('contextMenu').hidden = true; }
+function showDialog(mode) {
+    const parent = findObject(state.selectedId);
+    if (mode !== 'forest' && !canCreate(parent, mode)) return;
+    returnFocus = document.activeElement; closeMenus(); dialogMode = mode; dialogParentId = parent?.id;
+    $('objectForm').reset(); $('dialogError').textContent = '';
+    $('creationFields').replaceChildren(); dialogInputs.clear();
+    $('dialogTitle').textContent = mode === 'forest' ? 'New Forest' : 'New Object - ' + labels[mode];
+    applyIcon($('dialogIcon'), mode === 'forest' ? 'domain' : mode);
+    const simple = mode === 'forest' || mode === 'ou';
+    $('simpleName').hidden = !simple; $('objectName').disabled = !simple;
+    $('nameLabel').textContent = mode === 'forest' ? 'Root domain name' : 'Name:';
+    $('objectName').placeholder = mode === 'forest' ? 'corp.local' : '';
+    $('objectName').maxLength = mode === 'forest' ? 253 : 64;
+    $('dialogLocation').textContent = mode === 'forest' ? 'Create a simulated root domain. This replaces the current workspace.' : 'Create in: ' + distinguishedName(parent);
+    $('protectionField').hidden = mode !== 'ou';
+    if (dialogBuilders[mode]) dialogBuilders[mode]($('creationFields'), domainOf(parent));
+    $('objectDialog').showModal();
+    if (simple) $('objectName').focus(); else dialogInputs.values().next().value.focus();
+}
+$('objectForm').onsubmit = event => {
+    event.preventDefault(); const name = $('objectName').value.trim();
+    function invalid(message) { $('dialogError').textContent = message; }
+    if (dialogMode === 'forest') {
+        if (!name) return invalid('Enter a name.');
+        const parts = name.split('.');
+        if (name.length > 253 || parts.length < 2 || parts.some(part => !/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(part))) return invalid('Use a domain such as corp.local, with valid DNS labels (1–63 letters, digits or internal hyphens).');
+        const root = makeObject(name.toLowerCase(), 'domain');
+        root.children = ['Builtin', 'Computers', 'Domain Controllers', 'ForeignSecurityPrincipals', 'Managed Service Accounts', 'Users'].map(label => Object.assign(makeObject(label, label === 'Domain Controllers' ? 'ou' : 'container', root.id), { defaultObject: true }));
+        replaceRoots([root], { name: root.name, dirty: true });
+    } else {
+        const values = dialogMode === 'ou' ? { name, protectedFromAccidentalDeletion: $('protection').checked } : readDialogValues();
+        try { createDirectoryObject(dialogMode, dialogParentId, values); }
+        catch (error) { return invalid(error.message); }
+    }
+    $('objectDialog').close(); render(true);
+};
+$('cancelDialog').onclick = () => $('objectDialog').close();
+$('objectDialog').addEventListener('close', () => { if (returnFocus?.isConnected) returnFocus.focus(); });
+function showContext(x, y) {
+    closeMenus(); const menu = $('contextMenu'), selected = findObject(state.selectedId);
+    const hasNewCommands = CREATION_TYPES.some(type => canCreate(selected, type));
+    menu.hidden = false; $('contextNew').hidden = !hasNewCommands; $('contextNew').open = hasNewCommands;
+    $('contextPropertiesSeparator').hidden = !hasNewCommands;
+    $('contextRename').hidden = !canRename(selected);
+    $('contextMove').hidden = !canMove(selected);
+    $('contextDelete').hidden = $('contextDeleteSeparator').hidden = !canDelete(selected);
+    updateNewCommands();
+    menu.style.left = Math.max(0, Math.min(x, innerWidth - menu.offsetWidth - 5)) + 'px';
+    menu.style.top = Math.max(0, Math.min(y, innerHeight - menu.offsetHeight - 5)) + 'px';
+    (hasNewCommands ? $('contextNew').querySelector('summary') : $('contextProperties')).focus();
+}
+/* 3a. Relocation: one validated hierarchy mutation for all present/future entry points. */
+function canMove(node) { return canRename(node); }
+function validateMove(objectId, destinationId) {
+    const node = findObject(objectId), destination = findObject(destinationId);
+    if (!canMove(node)) throw new Error('Domain and default directory objects cannot be moved.');
+    const parent = findObject(node.parentId);
+    if (!parent || !parent.children.includes(node)) throw new Error('The object has no valid current parent.');
+    if (!canPlace(destination, node.type)) throw new Error('Select a valid domain, container or Organizational Unit destination.');
+    if (domainOf(node)?.id !== domainOf(destination)?.id) throw new Error('Cross-domain moves are not supported.');
+    let ancestor = destination;
+    const seen = new Set();
+    while (ancestor) {
+        if (ancestor.id === node.id) throw new Error('An object cannot be moved into itself or its descendants.');
+        if (seen.has(ancestor.id)) throw new Error('The destination hierarchy contains a cycle.');
+        seen.add(ancestor.id); ancestor = findObject(ancestor.parentId);
+    }
+    if (destination.id === parent.id) return { node, parent, destination, changed: false };
+    if (node.protectedFromAccidentalDeletion) throw new Error('This object is protected from accidental deletion. Disable protection in Properties before moving it.');
+    validateDirectoryName(node.type, destination, node.name, node.id);
+    return { node, parent, destination, changed: true };
+}
+function moveDirectoryObject(objectId, destinationId) {
+    const { node, parent, destination, changed } = validateMove(objectId, destinationId);
+    if (!changed) return false;
+    parent.children.splice(parent.children.indexOf(node), 1);
+    destination.children.push(node); node.parentId = destination.id;
+    state.selectedId = node.id;
+    let ancestor = destination;
+    while (ancestor) { ancestor.expanded = true; ancestor = findObject(ancestor.parentId); }
+    setDirty(true); render(true); return true;
+}
+let moveObjectId = null, moveDestinationId = null, moveReturnFocus = null;
+const moveExpandedIds = new Set();
+function renderMoveTree(focusId = null, focusExpander = false) {
+    const tree = $('moveTree'); tree.replaceChildren();
+    function add(nodes, host, depth) {
+        for (const node of nodes.filter(item => ['domain','ou','container'].includes(item.type))) {
+            const children = node.children.filter(item => ['ou','container'].includes(item.type));
+            const item = document.createElement('div'); item.setAttribute('role', 'treeitem'); item.setAttribute('aria-level', depth + 1);
+            item.setAttribute('aria-selected', node.id === moveDestinationId);
+            const row = document.createElement('div'); row.className = 'tree-item' + (node.id === moveDestinationId ? ' selected' : ''); row.style.paddingLeft = depth * 20 + 'px';
+            const expand = document.createElement('button'); expand.type = 'button'; expand.className = 'expander'; expand.disabled = !children.length;
+            expand.textContent = children.length ? (moveExpandedIds.has(node.id) ? '▼' : '▶') : '';
+            expand.setAttribute('aria-label', (moveExpandedIds.has(node.id) ? 'Collapse ' : 'Expand ') + node.name);
+            expand.dataset.destinationId = node.id;
+            expand.onclick = () => { if (moveExpandedIds.has(node.id)) moveExpandedIds.delete(node.id); else moveExpandedIds.add(node.id); renderMoveTree(node.id, true); };
+            const choose = document.createElement('button'); choose.type = 'button'; choose.className = 'destination';
+            choose.dataset.destinationId = node.id;
+            choose.append(createIcon(node.type), document.createTextNode(node.name));
+            try { validateMove(moveObjectId, node.id); } catch (error) { choose.disabled = true; choose.title = error.message; }
+            choose.onclick = () => { moveDestinationId = node.id; $('moveError').textContent = ''; $('moveOK').disabled = false; renderMoveTree(node.id); };
+            row.append(expand, choose); item.append(row); host.append(item);
+            if (children.length) {
+                item.setAttribute('aria-expanded', moveExpandedIds.has(node.id));
+                if (moveExpandedIds.has(node.id)) { const group = document.createElement('div'); group.setAttribute('role', 'group'); item.append(group); add(children, group, depth + 1); }
+            }
+        }
+    }
+    add(state.roots, tree, 0);
+    if (focusId) [...tree.querySelectorAll(focusExpander ? '.expander' : '.destination')].find(button => button.dataset.destinationId === focusId)?.focus();
+}
+function showMoveDialog() {
+    if (document.querySelector('dialog[open]')) return;
+    if (inlineRename && !finishInlineRename()) return;
+    const node = findObject(state.selectedId); if (!canMove(node)) return;
+    moveObjectId = node.id; moveDestinationId = node.parentId; moveReturnFocus = document.activeElement; closeMenus();
+    moveExpandedIds.clear(); allObjects().filter(item => ['domain','ou','container'].includes(item.type)).forEach(item => moveExpandedIds.add(item.id));
+    $('moveObject').textContent = 'Move: ' + node.name;
+    $('moveError').textContent = node.protectedFromAccidentalDeletion ? 'This object is protected from accidental deletion. Disable protection in Properties before moving it.' : '';
+    $('moveOK').disabled = false; renderMoveTree(); $('moveDialog').showModal();
+}
+$('moveForm').onsubmit = event => {
+    event.preventDefault();
+    try { moveDirectoryObject(moveObjectId, moveDestinationId); $('moveDialog').close(); }
+    catch (error) { $('moveError').textContent = error.message; }
+};
+$('cancelMove').onclick = () => $('moveDialog').close();
+$('moveDialog').addEventListener('close', () => {
+    if (moveReturnFocus?.isConnected) moveReturnFocus.focus();
+    else $('tree').querySelector('[tabindex="0"]')?.focus({ preventScroll: true });
+});
+/* 3b. Safe deletion. Every entry point uses this confirmation-gated operation. */
+function canDelete(node) { return canRename(node); }
+function validateDelete(objectId) {
+    const node = findObject(objectId);
+    if (!canDelete(node)) throw new Error('Domain and default directory objects cannot be deleted.');
+    const parent = findObject(node.parentId);
+    if (!parent || !parent.children.includes(node)) throw new Error('The object has no valid current parent.');
+    if (node.protectedFromAccidentalDeletion) throw new Error('This object is protected from accidental deletion. Disable protection in Properties before deleting it.');
+    const descendants = allObjects(node.children);
+    const protectedCount = descendants.filter(item => item.protectedFromAccidentalDeletion).length;
+    if (protectedCount) throw new Error('This subtree contains ' + protectedCount + ' object' + (protectedCount === 1 ? '' : 's') + ' protected from accidental deletion. Disable protection on those objects in Properties before deleting the parent.');
+    if (descendants.some(isDefaultObject)) throw new Error('This subtree contains default directory objects and cannot be deleted.');
+    return { node, parent, descendants };
+}
+function confirmDirectoryDelete(info, errorMessage = '') {
+    const dialog = $('deleteDialog');
+    $('deleteTitle').textContent = errorMessage ? 'Cannot Delete Object' : 'Delete ' + (labels[info.node.type] || 'Object');
+    const count = info?.descendants.length || 0;
+    $('deleteMessage').textContent = errorMessage || (count ? '"' + info.node.name + '" contains ' + count + ' descendant directory object' + (count === 1 ? '.' : 's.') : 'Are you sure you want to delete "' + info.node.name + '"?');
+    $('deleteWarning').textContent = !errorMessage && count ? 'Deleting "' + info.node.name + '" will also delete all objects beneath it. This cannot be undone.' : '';
+    $('confirmDelete').hidden = Boolean(errorMessage); $('cancelDelete').textContent = errorMessage ? 'Close' : 'Cancel';
+    dialog.returnValue = '';
+    return new Promise(resolve => {
+        dialog.addEventListener('close', () => resolve(!errorMessage && dialog.returnValue === 'delete'), { once: true });
+        dialog.showModal(); $('cancelDelete').focus();
+    });
+}
+async function deleteDirectoryObject(objectId) {
+    if (document.querySelector('dialog[open]') || inlineRename) return false;
+    const deleteReturnFocus = document.activeElement; closeMenus();
+    let info;
+    try { info = validateDelete(objectId); }
+    catch (error) { await confirmDirectoryDelete(null, error.message); if (deleteReturnFocus?.isConnected) deleteReturnFocus.focus(); return false; }
+    const confirmedName = info.node.name;
+    if (!await confirmDirectoryDelete(info)) { if (deleteReturnFocus?.isConnected) deleteReturnFocus.focus(); return false; }
+    // Recheck after confirmation; no protection or hierarchy changes may bypass validation.
+    try {
+        const current = validateDelete(objectId);
+        if (current.parent !== info.parent || current.node !== info.node || current.node.name !== confirmedName ||
+            current.descendants.length !== info.descendants.length || current.descendants.some((item, index) => item !== info.descendants[index])) throw new Error('The object or subtree changed. Please invoke Delete again.');
+        const removedIds = new Set([current.node.id, ...current.descendants.map(item => item.id)]);
+        current.parent.children.splice(current.parent.children.indexOf(current.node), 1);
+        state.selectedId = current.parent.id;
+        for (const id of removedIds) moveExpandedIds.delete(id);
+        $('moveTree').replaceChildren();
+        if (removedIds.has(moveObjectId)) moveObjectId = null;
+        if (removedIds.has(moveDestinationId)) moveDestinationId = null;
+        if (removedIds.has(propertiesObjectId)) { propertiesObjectId = null; propertyInputs.clear(); $('propertiesPanels').replaceChildren(); $('propertiesTabs').replaceChildren(); }
+        if (removedIds.has(dialogParentId)) dialogParentId = null;
+        setDirty(true); render(true);
+        if (!moveReturnFocus?.isConnected) moveReturnFocus = null;
+        if (!propertiesReturnFocus?.isConnected) propertiesReturnFocus = null;
+        if (!returnFocus?.isConnected) returnFocus = null;
+        return true;
+    } catch (error) { await confirmDirectoryDelete(null, error.message); if (deleteReturnFocus?.isConnected) deleteReturnFocus.focus(); return false; }
+}
+function requestDelete() { return deleteDirectoryObject(state.selectedId); }
+$('cancelDelete').onclick = () => $('deleteDialog').close('cancel');
+$('confirmDelete').onclick = () => $('deleteDialog').close('delete');
+/* 3c. Existing-object Properties. Stable identity remains immutable. */
+let propertiesObjectId = null, propertiesReturnFocus = null;
+const propertyInputs = new Map();
+function propertyField(host, key, label, value, { readOnly = false, maxLength = 64 } = {}) {
+    const wrapper = document.createElement('label'); wrapper.className = 'form-field';
+    const caption = document.createElement('span'); caption.textContent = label;
+    const input = document.createElement('input'); input.type = 'text'; input.value = value ?? ''; input.readOnly = readOnly;
+    input.maxLength = maxLength; input.autocomplete = 'off'; input.setAttribute('aria-describedby', 'propertiesError');
+    wrapper.append(caption, input); host.append(wrapper); if (!readOnly) propertyInputs.set(key, input); return input;
+}
+function propertySelect(host, key, label, value, choices) {
+    const wrapper = document.createElement('label'); wrapper.className = 'form-field';
+    const caption = document.createElement('span'); caption.textContent = label;
+    const select = document.createElement('select');
+    for (const [choiceValue, choiceLabel] of choices) { const option = document.createElement('option'); option.value = choiceValue; option.textContent = choiceLabel; select.append(option); }
+    select.value = value; wrapper.append(caption, select); host.append(wrapper); propertyInputs.set(key, select);
+}
+function propertyCheckbox(host, key, label, checked) {
+    const wrapper = document.createElement('label'); wrapper.className = 'property-check';
+    const input = document.createElement('input'); input.type = 'checkbox'; input.checked = checked;
+    const caption = document.createElement('span'); caption.textContent = label;
+    wrapper.append(input, caption); host.append(wrapper); propertyInputs.set(key, input);
+}
+function addPropertyTab(name, build) {
+    const tabId = 'property-tab-' + name.toLowerCase(), panelId = 'property-panel-' + name.toLowerCase();
+    const tab = document.createElement('button'); tab.type = 'button'; tab.className = 'property-tab'; tab.id = tabId;
+    tab.textContent = name; tab.setAttribute('role', 'tab'); tab.setAttribute('aria-controls', panelId);
+    const panel = document.createElement('section'); panel.className = 'property-panel'; panel.id = panelId;
+    panel.setAttribute('role', 'tabpanel'); panel.setAttribute('aria-labelledby', tabId);
+    tab.onclick = () => {
+        for (const item of $('propertiesTabs').children) item.setAttribute('aria-selected', item === tab);
+        for (const item of $('propertiesPanels').children) item.hidden = item !== panel;
+    };
+    $('propertiesTabs').append(tab); $('propertiesPanels').append(panel); build(panel);
+    if ($('propertiesTabs').children.length === 1) { tab.setAttribute('aria-selected', 'true'); panel.hidden = false; }
+    else { tab.setAttribute('aria-selected', 'false'); panel.hidden = true; }
+}
+function buildGeneralProperties(panel, node) {
+    propertyField(panel, 'name', node.type === 'domain' ? 'Domain name:' : 'Name:', node.name, { readOnly: !canRename(node), maxLength: node.type === 'domain' ? 253 : node.type === 'computer' ? 63 : 64 });
+    if (['user','inetOrgPerson','contact'].includes(node.type)) {
+        propertyField(panel, 'firstName', 'First name:', node.firstName);
+        propertyField(panel, 'initials', 'Initials:', node.initials, { maxLength: 6 });
+        propertyField(panel, 'lastName', 'Last name:', node.lastName);
+        propertyField(panel, 'displayName', 'Display name:', node.displayName);
+        if (node.type !== 'contact') propertyField(panel, 'fullName', 'Full name:', node.fullName);
+    } else if (node.type === 'ou') {
+        propertyCheckbox(panel, 'protectedFromAccidentalDeletion', 'Protect object from accidental deletion', node.protectedFromAccidentalDeletion);
+    } else if (node.type === 'computer') {
+        propertyField(panel, null, 'Computer name (pre-Windows 2000):', node.samAccountName, { readOnly: true, maxLength: 16 });
+        const note = document.createElement('p'); note.className = 'property-note'; note.textContent = 'The computer account name is read-only. Renaming the directory object does not change its account name.'; panel.append(note);
+    } else if (node.type === 'group') {
+        propertyField(panel, 'samAccountName', 'Group name (pre-Windows 2000):', node.samAccountName, { maxLength: 256 });
+        propertySelect(panel, 'groupScope', 'Group scope:', node.groupScope, [['domainLocal','Domain local'],['global','Global'],['universal','Universal']]);
+        propertySelect(panel, 'groupType', 'Group type:', node.groupType, [['security','Security'],['distribution','Distribution']]);
+    } else if (node.type === 'printer') {
+        propertyField(panel, 'uncPath', 'UNC path:', node.uncPath, { maxLength: 260 });
+    } else if (node.type === 'share') {
+        propertyField(panel, 'networkPath', 'Network path:', node.networkPath, { maxLength: 260 });
+    } else {
+        const note = document.createElement('p'); note.className = 'property-note'; note.textContent = 'This object has no editable properties in the current simulator.'; panel.append(note);
+    }
+}
+function readPropertyValues() {
+    return Object.fromEntries([...propertyInputs].map(([key, input]) => [key, input.type === 'checkbox' ? input.checked : input.value.trim()]));
+}
+function validatedPropertyUpdates(node, values) {
+    const updates = {};
+    if (['user','inetOrgPerson','contact'].includes(node.type)) Object.assign(updates, validatePersonProperties(values, { includeFullName: node.type !== 'contact' }));
+    if (node.type === 'user' || node.type === 'inetOrgPerson') {
+        const domain = domainOf(node);
+        updates.samAccountName = validateSamAccountName(node.type, values.samAccountName, domain, { currentId: node.id, objectName: node.name });
+        updates.userPrincipalName = validateUserPrincipalName(values.userPrincipalName, domain, { currentId: node.id });
+    } else if (node.type === 'ou') updates.protectedFromAccidentalDeletion = Boolean(values.protectedFromAccidentalDeletion);
+    else if (node.type === 'group') {
+        updates.samAccountName = validateSamAccountName('group', values.samAccountName, domainOf(node), { currentId: node.id, objectName: node.name });
+        if (!['domainLocal','global','universal'].includes(values.groupScope) || !['security','distribution'].includes(values.groupType)) throw new Error('Choose a valid group scope and type.');
+        updates.groupScope = values.groupScope; updates.groupType = values.groupType;
+    } else if (node.type === 'printer') updates.uncPath = validateResourcePath('printer', values.uncPath);
+    else if (node.type === 'share') updates.networkPath = validateResourcePath('share', values.networkPath);
+    return updates;
+}
+function applyPropertyChanges(node, values) {
+    const updates = validatedPropertyUpdates(node, values);
+    return commitObjectEdits(node, values.name ?? node.name, updates);
+}
+function commitObjectEdits(node, value, updates = {}) {
+    const name = String(value).trim();
+    if (name !== node.name && !canRename(node)) throw new Error('This default or domain object cannot be renamed.');
+    if (canRename(node)) validateDirectoryName(node.type, findObject(node.parentId), name, node.id);
+    updates = { ...updates, name };
+    const changed = Object.entries(updates).some(([key, value]) => node[key] !== value);
+    if (changed) Object.assign(node, updates);
+    return changed;
+}
+function showProperties() {
+    const node = findObject(state.selectedId); if (!node) return;
+    propertiesObjectId = node.id; propertiesReturnFocus = document.activeElement; closeMenus();
+    propertyInputs.clear(); $('propertiesTabs').replaceChildren(); $('propertiesPanels').replaceChildren(); $('propertiesError').textContent = '';
+    $('propertiesTitle').textContent = (labels[node.type] || node.type) + ' Properties'; applyIcon($('propertiesIcon'), node.type);
+    addPropertyTab('General', panel => buildGeneralProperties(panel, node));
+    if (node.type === 'user' || node.type === 'inetOrgPerson') addPropertyTab('Account', panel => {
+        propertyField(panel, 'userPrincipalName', 'User logon name (UPN):', node.userPrincipalName, { maxLength: 318 });
+        propertyField(panel, 'samAccountName', 'User logon name (pre-Windows 2000):', node.samAccountName, { maxLength: 20 });
+    });
+    addPropertyTab('Object', panel => {
+        propertyField(panel, null, 'Object type:', labels[node.type] || node.type, { readOnly: true });
+        propertyField(panel, null, 'Distinguished name:', distinguishedName(node), { readOnly: true, maxLength: 1024 });
+        propertyField(panel, null, 'Object ID:', node.id, { readOnly: true, maxLength: 128 });
+    });
+    $('propertiesDialog').showModal();
+    propertyInputs.values().next().value?.focus();
+}
+$('propertiesForm').onsubmit = event => {
+    event.preventDefault(); const node = findObject(propertiesObjectId); if (!node) return $('propertiesDialog').close();
+    try {
+        const changed = applyPropertyChanges(node, readPropertyValues());
+        if (changed) setDirty(true);
+        $('propertiesDialog').close(); if (changed) render(true);
+    } catch (error) { $('propertiesError').textContent = error.message; }
+};
+$('cancelProperties').onclick = () => $('propertiesDialog').close();
+$('propertiesDialog').addEventListener('close', () => { if (propertiesReturnFocus?.isConnected) propertiesReturnFocus.focus(); });
+$('actionProperties').onclick = $('contextProperties').onclick = showProperties;
+/* 4. Legacy Markdown import compatibility (not the native project format).
+   URI-encoded JSON comments retain Gate 2 properties. Only allowlisted scalar
+   fields are imported; IDs, ancestry and object classes always come from the tree. */
+const PROPERTY_KEYS = ['firstName','initials','lastName','displayName','fullName','samAccountName','userPrincipalName','groupScope','groupType','uncPath','networkPath'];
+function parseProperties(text) {
+    const value = JSON.parse(decodeURIComponent(text));
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid object property metadata.');
+    const properties = {};
+    for (const key of PROPERTY_KEYS) {
+        if (value[key] === undefined) continue;
+        if (typeof value[key] !== 'string' || value[key].length > 512 || /[\u0000-\u001f\u007f]/.test(value[key])) throw new Error('Invalid property: ' + key);
+        properties[key] = value[key];
+    }
+    return properties;
+}
+function parseMarkdown(markdown) {
+    const root = { children: [] }, stack = [{ node: root, indent: -1 }];
+    const known = new Set(['domain','ou','container','user','computer','group','inetOrgPerson','contact','printer','share','policy']);
+    for (const line of markdown.split(/\r?\n/)) {
+        const match = line.match(/^(\s*)-\s*(.+)$/); if (!match) continue;
+        const indent = match[1].replace(/\t/g, '  ').length;
+        while (stack.length > 1 && stack.at(-1).indent >= indent) stack.pop();
+        if (stack.length > 100) throw new Error('Design nesting exceeds 100 levels.');
+        let name = match[2].trim(), protectedValue = false, type = 'ou', properties = {};
+        const metadata = name.match(/ <!-- get-active:properties=(.*?) -->$/);
+        if (metadata) { properties = parseProperties(metadata[1]); name = name.slice(0, metadata.index); }
+        const protectionMarker = ' <!-- get-active:protected -->';
+        if (name.endsWith(protectionMarker)) { protectedValue = true; name = name.slice(0, -protectionMarker.length).trimEnd(); }
+        const tag = name.match(/^(.+?)\s*\[(\w+)\]$/);
+        if (tag) { name = tag[1].trim(); const parsedType = tag[2].toLowerCase(); type = parsedType === 'inetorgperson' ? 'inetOrgPerson' : parsedType; if (!known.has(type)) throw new Error('Unsupported object type: ' + parsedType); }
+        else if (stack.length === 1 && /^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(name)) type = 'domain';
+        const parent = stack.at(-1).node;
+        if (parent.type && !['domain','container','ou'].includes(parent.type)) throw new Error('Leaf objects cannot contain child objects.');
+        const node = makeObject(name, type, parent.id || null, protectedValue);
+        Object.assign(node, properties);
+        parent.children.push(node); stack.push({ node, indent });
+    }
+    if (!root.children.length) throw new Error('No directory objects found in this design file.');
+    return root.children;
+}
+function download(blob, filename) {
+    const url = URL.createObjectURL(blob), link = document.createElement('a');
+    link.href = url; link.download = filename; document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+/* 5. Native Get Active project persistence. Schema knowledge is centralized here. */
+const PROJECT_APPLICATION = 'Get Active';
+const PROJECT_FORMAT_VERSION = 1;
+const PROJECT_TYPES = new Set(['domain','ou','container','user','computer','group','inetOrgPerson','contact','printer','share','policy']);
+const TYPE_PROPERTIES = {
+    domain: [], ou: [], container: [],
+    user: ['firstName','initials','lastName','displayName','fullName','samAccountName','userPrincipalName'],
+    inetOrgPerson: ['firstName','initials','lastName','displayName','fullName','samAccountName','userPrincipalName'],
+    computer: ['samAccountName'], group: ['samAccountName','groupScope','groupType'],
+    contact: ['firstName','initials','lastName','displayName'], printer: ['uncPath'], share: ['networkPath'], policy: []
+};
+function isRecord(value) { return Boolean(value) && typeof value === 'object' && !Array.isArray(value); }
+function validDomainName(value) {
+    if (typeof value !== 'string' || value.length > 253) return false;
+    const parts = value.split('.');
+    return parts.length >= 2 && parts.every(part => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(part));
+}
+function validAccountName(value, maxLength) {
+    return typeof value === 'string' && value.length >= 1 && value.length <= maxLength &&
+        !/["/\\\[\]:;|=,+*?<>\u0000-\u001f\u007f]/.test(value) && !value.endsWith('.') && value === value.trim();
+}
+function serializeDirectoryObject(node) {
+    const saved = {
+        id: node.id, name: node.name, type: node.type, objectType: node.type,
+        parentId: node.parentId, protectedFromAccidentalDeletion: Boolean(node.protectedFromAccidentalDeletion)
+    };
+    if (isDefaultObject(node)) saved.defaultObject = true;
+    else if (node.defaultObject === false) saved.defaultObject = false;
+    for (const key of TYPE_PROPERTIES[node.type] || []) if (typeof node[key] === 'string') saved[key] = node[key];
+    saved.children = node.children.map(serializeDirectoryObject);
+    return saved;
+}
+function projectDocument(roots = state.roots, { name = projectMeta.name, selectedId = state.selectedId } = {}) {
+    const nodes = roots.flatMap(function flatten(node) { return [node, ...node.children.flatMap(flatten)]; });
+    return {
+        application: PROJECT_APPLICATION,
+        formatVersion: PROJECT_FORMAT_VERSION,
+        savedAt: new Date().toISOString(),
+        project: { name, forest: roots.map(serializeDirectoryObject) },
+        uiState: { selectedId: selectedId || null, expandedIds: nodes.filter(node => node.expanded).map(node => node.id) }
+    };
+}
+function serializeProject() { return JSON.stringify(projectDocument(), null, 2) + '\n'; }
+function validateProject(documentValue) {
+    if (!isRecord(documentValue)) throw new Error('The file does not contain a Get Active project object.');
+    if (documentValue.application !== PROJECT_APPLICATION) throw new Error('This is not a Get Active project file.');
+    if (!Number.isInteger(documentValue.formatVersion)) throw new Error('The project format version is missing or invalid.');
+    if (documentValue.formatVersion > PROJECT_FORMAT_VERSION) throw new Error('This project uses a newer Get Active format and cannot be opened by this version.');
+    if (documentValue.formatVersion !== PROJECT_FORMAT_VERSION) throw new Error('This Get Active project format is not supported.');
+    if (typeof documentValue.savedAt !== 'string' || !Number.isFinite(Date.parse(documentValue.savedAt))) throw new Error('The project save timestamp is invalid.');
+    if (!isRecord(documentValue.project) || typeof documentValue.project.name !== 'string' || !documentValue.project.name.trim() || documentValue.project.name.length > 253 || !Array.isArray(documentValue.project.forest)) throw new Error('The project section is missing or invalid.');
+    if (documentValue.project.forest.length !== 1) throw new Error('A Get Active project must contain exactly one root domain.');
+
+    const seen = new Map(), ordered = [];
+    function requiredText(raw, key, maxLength, allowEmpty = false) {
+        if (!Object.prototype.hasOwnProperty.call(raw, key) || typeof raw[key] !== 'string') throw new Error('Object "' + raw.name + '" is missing ' + key + '.');
+        if ((!allowEmpty && !raw[key]) || raw[key].length > maxLength || /[\u0000-\u001f\u007f]/.test(raw[key])) throw new Error('Object "' + raw.name + '" has an invalid ' + key + '.');
+        return raw[key];
+    }
+    function readNode(raw, expectedParentId, depth) {
+        if (depth > 100) throw new Error('Project nesting exceeds 100 levels.');
+        if (!isRecord(raw)) throw new Error('A directory object is malformed.');
+        if (typeof raw.id !== 'string' || !raw.id || raw.id.length > 128 || /[\u0000-\u001f\u007f]/.test(raw.id)) throw new Error('Every directory object must have a valid string ID.');
+        if (seen.has(raw.id)) throw new Error('Duplicate object ID: ' + raw.id);
+        if (typeof raw.type !== 'string' || !PROJECT_TYPES.has(raw.type)) throw new Error('Unsupported object type on "' + String(raw.name || raw.id) + '".');
+        if (raw.objectType !== raw.type) throw new Error('Object type fields disagree on "' + String(raw.name || raw.id) + '".');
+        const maxName = raw.type === 'domain' ? 253 : 64;
+        if (typeof raw.name !== 'string' || !raw.name || raw.name !== raw.name.trim() || raw.name.length > maxName || /[\u0000-\u001f\u007f]/.test(raw.name)) throw new Error('Object ' + raw.id + ' has an invalid name.');
+        if (!Object.prototype.hasOwnProperty.call(raw, 'parentId') || raw.parentId !== expectedParentId) throw new Error('Parent/child relationship disagreement on "' + raw.name + '".');
+        if (typeof raw.protectedFromAccidentalDeletion !== 'boolean') throw new Error('Object "' + raw.name + '" has an invalid protection state.');
+        if (raw.type !== 'ou' && raw.protectedFromAccidentalDeletion) throw new Error('Only Organizational Units can be protected from accidental deletion.');
+        if (!Array.isArray(raw.children)) throw new Error('Object "' + raw.name + '" has an invalid children list.');
+        if (!['domain','ou','container'].includes(raw.type) && raw.children.length) throw new Error('Leaf object "' + raw.name + '" cannot contain child objects.');
+        for (const key of PROPERTY_KEYS) if (raw[key] !== undefined && !(TYPE_PROPERTIES[raw.type] || []).includes(key)) throw new Error('Property ' + key + ' is not valid for a ' + raw.type + ' object.');
+
+        const node = { id: raw.id, name: raw.name, type: raw.type, objectType: raw.type, parentId: raw.parentId, children: [], protectedFromAccidentalDeletion: raw.protectedFromAccidentalDeletion, expanded: true };
+        if (raw.defaultObject !== undefined && typeof raw.defaultObject !== 'boolean') throw new Error('Invalid default-object identity marker.');
+        if (typeof raw.defaultObject === 'boolean') node.defaultObject = raw.defaultObject;
+        seen.set(node.id, node); ordered.push(node);
+        if (raw.type === 'domain' && !validDomainName(raw.name)) throw new Error('The root domain name is invalid.');
+        if (raw.type === 'user' || raw.type === 'inetOrgPerson') {
+            node.firstName = requiredText(raw, 'firstName', 64, true); node.initials = requiredText(raw, 'initials', 6, true); node.lastName = requiredText(raw, 'lastName', 64, true);
+            node.displayName = requiredText(raw, 'displayName', 64); node.fullName = requiredText(raw, 'fullName', 64); node.samAccountName = requiredText(raw, 'samAccountName', 20); node.userPrincipalName = requiredText(raw, 'userPrincipalName', 318);
+            if (!validAccountName(node.samAccountName, 20)) throw new Error((labels[raw.type] || raw.type) + ' "' + node.name + '" has an invalid pre-Windows 2000 account name.');
+        } else if (raw.type === 'computer') {
+            node.samAccountName = requiredText(raw, 'samAccountName', 16);
+            const legacyName = node.samAccountName.endsWith('$') ? node.samAccountName.slice(0,-1) : '';
+            if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(node.name) || !/^[a-z0-9](?:[a-z0-9-]{0,13}[a-z0-9])?$/i.test(legacyName)) throw new Error('Computer "' + node.name + '" has an invalid computer or legacy account name.');
+        } else if (raw.type === 'group') {
+            node.samAccountName = requiredText(raw, 'samAccountName', 256); node.groupScope = requiredText(raw, 'groupScope', 20); node.groupType = requiredText(raw, 'groupType', 20);
+            if (!validAccountName(node.samAccountName, 256)) throw new Error('Group "' + node.name + '" has an invalid pre-Windows 2000 account name.');
+            if (!['domainLocal','global','universal'].includes(node.groupScope) || !['security','distribution'].includes(node.groupType)) throw new Error('Group "' + node.name + '" has an invalid scope or type.');
+        } else if (raw.type === 'contact') {
+            node.firstName = requiredText(raw, 'firstName', 64, true); node.initials = requiredText(raw, 'initials', 6, true); node.lastName = requiredText(raw, 'lastName', 64, true); node.displayName = requiredText(raw, 'displayName', 64);
+        } else if (raw.type === 'printer') {
+            node.uncPath = requiredText(raw, 'uncPath', 260);
+            if (!node.uncPath.startsWith('\\\\')) throw new Error('Printer "' + node.name + '" must have a UNC path beginning with \\\\.');
+        } else if (raw.type === 'share') {
+            node.networkPath = requiredText(raw, 'networkPath', 260);
+            if (!node.networkPath.startsWith('\\\\')) throw new Error('Shared Folder "' + node.name + '" must have a network path beginning with \\\\.');
+        }
+        node.children = raw.children.map(child => readNode(child, node.id, depth + 1));
+        const siblingNames = new Set();
+        for (const child of node.children) { const key = child.name.toLowerCase(); if (siblingNames.has(key)) throw new Error('Duplicate object name "' + child.name + '" under "' + node.name + '".'); siblingNames.add(key); }
+        return node;
+    }
+    const root = readNode(documentValue.project.forest[0], null, 0);
+    if (root.type !== 'domain') throw new Error('The project root must be a domain.');
+    if (ordered.length > 10000) throw new Error('The project contains more than 10,000 directory objects.');
+    for (const node of ordered) {
+        if (node !== root && node.type === 'domain') throw new Error('A project cannot contain a nested domain.');
+        if (node === root) continue;
+        const parent = seen.get(node.parentId);
+        if (!parent) throw new Error('Missing parent reference for "' + node.name + '".');
+        if (node.type === 'ou' ? !['domain','ou'].includes(parent.type) : !['domain','container','ou'].includes(parent.type)) throw new Error('Invalid placement for "' + node.name + '".');
+        const ancestry = new Set([node.id]); let ancestor = parent;
+        while (ancestor) { if (ancestry.has(ancestor.id)) throw new Error('The project contains a hierarchy cycle.'); ancestry.add(ancestor.id); ancestor = ancestor.parentId ? seen.get(ancestor.parentId) : null; }
+    }
+    const accountNames = new Set(), principalNames = new Set();
+    for (const node of ordered) {
+        if (['user','inetOrgPerson','computer','group'].includes(node.type)) { const key = node.samAccountName.toLowerCase(); if (accountNames.has(key)) throw new Error('Duplicate pre-Windows 2000 account name: ' + node.samAccountName); accountNames.add(key); }
+        if (node.type === 'user' || node.type === 'inetOrgPerson') {
+            const suffix = '@' + root.name.toLowerCase(), upn = node.userPrincipalName, local = upn.slice(0, -suffix.length);
+            if (!upn.toLowerCase().endsWith(suffix) || !local || local.length > 64 || /[\s@"/\\\[\]:;|=,+*?<>\u0000-\u001f\u007f]/.test(local)) throw new Error('User "' + node.name + '" has an invalid user principal name.');
+            const key = upn.toLowerCase(); if (principalNames.has(key)) throw new Error('Duplicate user principal name: ' + upn); principalNames.add(key);
+        }
+    }
+
+    let selectedId = root.id, expandedIds = null;
+    if (documentValue.uiState !== undefined) {
+        if (!isRecord(documentValue.uiState)) throw new Error('The project UI state is invalid.');
+        if (documentValue.uiState.selectedId !== undefined && documentValue.uiState.selectedId !== null) {
+            if (typeof documentValue.uiState.selectedId !== 'string' || !seen.has(documentValue.uiState.selectedId)) throw new Error('The saved selection does not reference a project object.');
+            selectedId = documentValue.uiState.selectedId;
+        }
+        if (documentValue.uiState.expandedIds !== undefined) {
+            if (!Array.isArray(documentValue.uiState.expandedIds)) throw new Error('The saved expansion state is invalid.');
+            expandedIds = new Set();
+            for (const id of documentValue.uiState.expandedIds) { if (typeof id !== 'string' || !seen.has(id) || expandedIds.has(id)) throw new Error('The saved expansion state contains an invalid object ID.'); expandedIds.add(id); }
+        }
+    }
+    for (const node of ordered) node.expanded = expandedIds ? expandedIds.has(node.id) : true;
+    return { roots: [root], selectedId, projectName: documentValue.project.name.trim() };
+}
+function deserializeProject(text) {
+    let value;
+    try { value = JSON.parse(text); } catch (_) { throw new Error('The selected file is not valid JSON.'); }
+    return validateProject(value);
+}
+const SAVE_PICKER_OPTIONS = {
+    suggestedName: 'get-active.getactive',
+    types: [{ description: 'Get Active Design', accept: { 'application/json': ['.getactive'] } }],
+    excludeAcceptAllOption: true
+};
+async function writeProjectFile(handle, text) {
+    let writable;
+    try {
+        writable = await handle.createWritable(); await writable.write(text); await writable.close();
+    } catch (error) {
+        try { await writable?.abort?.(); } catch (_) {}
+        throw error;
+    }
+}
+function completeSave(filename, fileHandle = null) {
+    projectMeta.currentFilename = safeFilename(filename); projectMeta.suggestedFilename = projectMeta.currentFilename;
+    projectMeta.hasSaved = true; projectMeta.fileHandle = fileHandle; setDirty(false); render(); return true;
+}
+async function saveProject(saveAs = false) {
+    closeMenus();
+    if (!state.roots.length) return false;
+    let text;
+    try { text = serializeProject(); validateProject(JSON.parse(text)); }
+    catch (error) { alert('Get Active could not save this design: ' + error.message); return false; }
+
+    if (!saveAs && projectMeta.fileHandle && typeof projectMeta.fileHandle.createWritable === 'function') {
+        try { await writeProjectFile(projectMeta.fileHandle, text); return completeSave(projectMeta.fileHandle.name || projectMeta.currentFilename, projectMeta.fileHandle); }
+        catch (error) { alert('Get Active could not save this design: ' + error.message); return false; }
+    }
+
+    let filename = safeFilename(projectMeta.currentFilename || projectMeta.suggestedFilename);
+    if (saveAs && typeof window.showSaveFilePicker === 'function') {
+        let handle;
+        try { handle = await window.showSaveFilePicker({ ...SAVE_PICKER_OPTIONS, suggestedName: filename }); }
+        catch (error) { if (error?.name === 'AbortError') return false; }
+        if (handle && typeof handle.createWritable === 'function') {
+            try { await writeProjectFile(handle, text); return completeSave(handle.name || filename, handle); }
+            catch (error) { alert('Get Active could not save this design: ' + error.message); return false; }
+        }
+    }
+
+    if (saveAs) {
+        const requested = prompt('Save design as:', filename);
+        if (requested === null) return false;
+        filename = safeFilename(requested);
+    }
+    try { download(new Blob([text], { type: 'application/json;charset=utf-8' }), filename); return completeSave(filename); }
+    catch (error) { alert('Get Active could not save this design: ' + error.message); return false; }
+}
+
+function uniqueLegacyValue(candidate, used, maxLength) {
+    const base = candidate.slice(0, maxLength) || 'object'; let value = base, number = 2;
+    while (used.has(value.toLowerCase())) { const suffix = String(number++); value = base.slice(0, maxLength - suffix.length) + suffix; }
+    used.add(value.toLowerCase()); return value;
+}
+function upgradeLegacyModel(roots) {
+    const nodes = roots.flatMap(function flatten(node) { return [node, ...node.children.flatMap(flatten)]; });
+    const usedAccounts = new Set(), usedPrincipals = new Set();
+    for (const node of nodes) {
+        if (node.type === 'user' || node.type === 'inetOrgPerson' || node.type === 'contact') {
+            node.firstName = typeof node.firstName === 'string' ? node.firstName : '';
+            node.initials = typeof node.initials === 'string' ? node.initials : '';
+            node.lastName = typeof node.lastName === 'string' ? node.lastName : '';
+            node.displayName = typeof node.displayName === 'string' && node.displayName ? node.displayName : node.name;
+            if (node.type === 'user' || node.type === 'inetOrgPerson') node.fullName = typeof node.fullName === 'string' && node.fullName ? node.fullName : node.name;
+        }
+        if (['user','inetOrgPerson','computer','group'].includes(node.type)) {
+            let candidate = String(node.samAccountName || node.name).replace(/\$$/, '').replace(/["/\\\[\]:;|=,+*?<>\u0000-\u001f\u007f]/g, '').replace(/\.+$/, '').trim();
+            const max = node.type === 'user' || node.type === 'inetOrgPerson' ? 20 : node.type === 'computer' ? 15 : 256;
+            if (node.type === 'computer') candidate = candidate.replace(/[^a-z0-9-]/gi, '-').replace(/^-+|-+$/g, '') || 'COMPUTER';
+            node.samAccountName = uniqueLegacyValue(candidate, usedAccounts, max) + (node.type === 'computer' ? '$' : '');
+        }
+        if (node.type === 'user' || node.type === 'inetOrgPerson') {
+            const domain = roots.find(root => root.type === 'domain');
+            let local = String(node.userPrincipalName || '').split('@')[0].replace(/[\s@"/\\\[\]:;|=,+*?<>\u0000-\u001f\u007f]/g, '.').replace(/^\.+|\.+$/g, '').slice(0,64) || 'user';
+            local = uniqueLegacyValue(local, usedPrincipals, 64); node.userPrincipalName = local + '@' + (domain?.name || 'invalid.local');
+        }
+        if (node.type === 'group') {
+            node.groupScope = ['domainLocal','global','universal'].includes(node.groupScope) ? node.groupScope : 'global';
+            node.groupType = ['security','distribution'].includes(node.groupType) ? node.groupType : 'security';
+        }
+        if (node.type === 'printer' && (typeof node.uncPath !== 'string' || !node.uncPath.startsWith('\\\\'))) node.uncPath = '\\\\LEGACY-PRINT\\' + node.name;
+        if (node.type === 'share' && (typeof node.networkPath !== 'string' || !node.networkPath.startsWith('\\\\'))) node.networkPath = '\\\\LEGACY-FILE\\' + node.name;
+    }
+    return roots;
+}
+
+let unsavedResolver = null;
+function finishUnsavedChoice(value) {
+    if (!$('unsavedDialog').open) return;
+    $('unsavedDialog').close(); const resolve = unsavedResolver; unsavedResolver = null; resolve?.(value);
+}
+function confirmUnsavedChanges() {
+    if (!state.dirty) return Promise.resolve(true);
+    return new Promise(resolve => { unsavedResolver = resolve; $('unsavedDialog').showModal(); $('unsavedSave').focus(); });
+}
+$('unsavedSave').onclick = async () => { if (await saveProject(false)) finishUnsavedChoice(true); };
+$('unsavedDiscard').onclick = () => finishUnsavedChoice(true);
+$('unsavedCancel').onclick = () => finishUnsavedChoice(false);
+$('unsavedDialog').addEventListener('cancel', event => { event.preventDefault(); finishUnsavedChoice(false); });
+
+async function openProject() {
+    closeMenus(); if (!await confirmUnsavedChanges()) return; $('projectFileInput').click();
+}
+async function importLegacyDesign() {
+    closeMenus(); if (!await confirmUnsavedChanges()) return; $('legacyFileInput').click();
+}
+$('projectFileInput').onchange = async event => {
+    const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+    try {
+        if (file.size > 5000000) throw new Error('Use a Get Active project smaller than 5 MB.');
+        const loaded = deserializeProject(await file.text());
+        replaceRoots(loaded.roots, { selectedId: loaded.selectedId, dirty: false, name: loaded.projectName, currentFilename: safeFilename(file.name), hasSaved: true });
+    } catch (error) { alert('Get Active could not open this design: ' + error.message); }
+};
+$('legacyFileInput').onchange = async event => {
+    const file = event.target.files[0]; event.target.value = ''; if (!file) return;
+    try {
+        if (file.size > 1000000) throw new Error('Use a legacy design smaller than 1 MB.');
+        const roots = upgradeLegacyModel(parseMarkdown(await file.text()));
+        const converted = validateProject(projectDocument(roots, { name: roots[0].name, selectedId: roots[0].id }));
+        replaceRoots(converted.roots, { selectedId: converted.selectedId, dirty: true, name: converted.projectName });
+    } catch (error) { alert('Get Active could not import this legacy design: ' + error.message); }
+};
+
+/* 6. Offline PNG export. Draw every object, including collapsed descendants.
+   This intentionally exports a directory diagram rather than a DOM screenshot. */
+async function exportAsImage() {
+    closeMenus(); const rows = [];
+    function collect(nodes, depth) { nodes.forEach(node => { rows.push({node, depth}); collect(node.children, depth + 1); }); }
+    collect(state.roots, 0);
+    const canvas = document.createElement('canvas'); const context = canvas.getContext('2d');
+    context.font = '14px Segoe UI, sans-serif';
+    const width = Math.max(720, ...rows.map(({node, depth}) => context.measureText(node.name + '   [' + (labels[node.type] || node.type) + ']').width + depth * 22 + 65));
+    const height = rows.length * 26 + 85;
+    if (width > 16000 || height > 16000 || width * height > 32000000) { alert('This design is too large for one PNG. Save your design to export the complete hierarchy.'); return; }
+    canvas.width = Math.ceil(width); canvas.height = height;
+    context.fillStyle = '#fff'; context.fillRect(0,0,width,height);
+    context.fillStyle = '#0a342d'; context.fillRect(0,0,width,58);
+    context.fillStyle = '#fff'; context.font = 'bold 18px Segoe UI, sans-serif'; context.fillText('GET ACTIVE — Directory design',16,24);
+    context.font = '12px Segoe UI, sans-serif'; context.fillText('Simulated directory design',16,45);
+    context.font = '14px Segoe UI, sans-serif';
+    const images = new Map();
+    try {
+        await Promise.all([...new Set(rows.map(({node}) => node.type))].map(type => new Promise((resolve, reject) => {
+            const image = new Image(); image.onload = () => { images.set(type, image); resolve(); }; image.onerror = () => reject(new Error('Could not draw the embedded icons.')); image.src = iconURL(type);
+        })));
+        rows.forEach(({node,depth}, index) => {
+            const x = 18 + depth * 22, y = 80 + index * 26;
+            context.drawImage(images.get(node.type), x, y - 13, 16, 16);
+            context.fillStyle = '#111'; context.fillText(node.name + '   [' + (labels[node.type] || node.type) + ']',x+23,y);
+        });
+    } catch (error) { alert('Could not export image: ' + error.message); return; }
+    canvas.toBlob(blob => { if (blob) download(blob,'GetActive-directory.png'); else alert('The browser could not create the image.'); }, 'image/png');
+}
+/* 7. Commands and lifecycle. */
+for (const [id, host] of [['actionRename', $('actionMenu').querySelector('.menu-panel')], ['contextRename', $('contextMenu')]]) {
+    const button = document.createElement('button'); button.id = id; button.type = 'button'; button.textContent = 'Rename    F2';
+    button.onclick = beginInlineRename; host.append(button);
+}
+buildNewMenus();
+for (const [id, host] of [['actionMove', $('actionMenu').querySelector('.menu-panel')], ['contextMove', $('contextMenu')]]) {
+    const button = document.createElement('button'); button.id = id; button.type = 'button'; button.textContent = 'Move…';
+    button.onclick = showMoveDialog; host.append(button);
+}
+$('ouShortcut').onclick = () => showDialog('ou');
+applyIcon($('titleIcon'), 'domain');
+for (const [id, host] of [['actionDelete', $('actionMenu').querySelector('.menu-panel')], ['contextDelete', $('contextMenu')]]) {
+    const separator = document.createElement('hr'); separator.id = id + 'Separator';
+    const button = document.createElement('button'); button.id = id; button.type = 'button'; button.textContent = 'Delete';
+    button.onclick = requestDelete; host.append(separator, button);
+}
+async function requestNewForest() { closeMenus(); if (await confirmUnsavedChanges()) showDialog('forest'); }
+$('newForest').onclick = $('emptyNew').onclick = requestNewForest;
+$('expandAll').onclick = () => { allObjects().forEach(node => node.expanded = true); render(); };
+$('collapseAll').onclick = () => { allObjects().forEach(node => node.expanded = false); state.selectedId = state.roots[0].id; render(); };
+$('exportImage').onclick = exportAsImage;
+$('openDesign').onclick = openProject;
+$('saveDesign').onclick = () => saveProject(false);
+$('saveDesignAs').onclick = () => saveProject(true);
+$('importLegacy').onclick = importLegacyDesign;
+$('loadExample').onclick = async () => {
+    closeMenus(); if (!await confirmUnsavedChanges()) return;
+    try {
+        const roots = upgradeLegacyModel(parseMarkdown(LEGACY_EXAMPLE));
+        const converted = validateProject(projectDocument(roots, { name: roots[0].name, selectedId: roots[0].id }));
+        replaceRoots(converted.roots, { selectedId: converted.selectedId, dirty: true, name: converted.projectName });
+    } catch (error) { alert('Get Active could not load the example: ' + error.message); }
+};
+document.addEventListener('pointerdown', event => { if (!event.target.closest('details') && !event.target.closest('#contextMenu')) closeMenus(); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenus(); });
+document.addEventListener('keydown', event => {
+    if (event.key === 'Delete' && !event.ctrlKey && !event.altKey && !event.shiftKey && !event.repeat && !inlineRename && !document.querySelector('dialog[open]') && !event.target.closest('input, textarea, select, [contenteditable="true"], [role="textbox"]') && canDelete(findObject(state.selectedId))) { event.preventDefault(); requestDelete(); return; }
+    if (event.key === 'F2' && !event.ctrlKey && !event.altKey && !event.shiftKey && !event.repeat && !document.querySelector('dialog[open]') && !event.target.closest('input, textarea, select, [contenteditable="true"]')) { event.preventDefault(); beginInlineRename(); return; }
+    if (event.altKey && !event.ctrlKey && !event.shiftKey && event.key === 'Enter' && !event.repeat && !document.querySelector('dialog[open]') && !event.target.closest('input, textarea, select, [contenteditable="true"]')) { event.preventDefault(); showProperties(); return; }
+    if (!event.ctrlKey || event.altKey || event.repeat || document.querySelector('dialog[open]') || event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const key = event.key.toLowerCase();
+    if (key === 's') { event.preventDefault(); saveProject(event.shiftKey); }
+    else if (key === 'o' && !event.shiftKey) { event.preventDefault(); openProject(); }
+});
+window.addEventListener('resize', closeMenus);
+window.addEventListener('beforeunload', event => { if (state.dirty) { event.preventDefault(); event.returnValue = ''; } });
+const LEGACY_EXAMPLE = `- contoso.com
+  - Domain Controllers
+    - DC01 [computer]
+    - DC02 [computer]
+  - Corporate
+    - Users
+      - John Smith [user]
+      - Jane Doe [user]
+      - Bob Wilson [user]
+    - Computers
+      - DESKTOP-001 [computer]
+      - LAPTOP-002 [computer]
+    - Groups
+      - Finance Team [group]
+      - IT Admins [group]
+  - Branch Offices
+    - New York
+      - NY-Users
+        - Alice Brown [user]
+      - NY-Computers
+        - NY-WS01 [computer]
+    - London
+      - UK-Users
+        - Charlie Davis [user]
+      - UK-Computers
+        - UK-WS01 [computer]`;
+render();
+</script>
+</body>
+</html>
