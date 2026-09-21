@@ -137,14 +137,14 @@ GetActive is proprietary software. Use is permitted under the terms provided in 
 
 ### Main Interface
 
-![GetActive Main Interface](screenshots/getactive-main.jpg)
+![GetActive Main Interface](Screenshots/getactive_main.jpg)
 
 ### Populated AD Structure
 
-![GetActive Populated Structure](screenshots/getactive-populated.jpg)
+![GetActive Populated Structure](Screenshots/getactive_populated.jpg)
 
 ### Object Properties
 
-![GetActive Object Properties](screenshots/getactive-properties.jpg)
+![GetActive Object Properties](Screenshots/getactive_properties.jpg)
 
 
