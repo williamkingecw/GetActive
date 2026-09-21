@@ -133,3 +133,18 @@ License information will be added as the project moves from Release Candidate to
 
 GetActive is proprietary software. Use is permitted under the terms provided in the LICENSE file. Modification and redistribution are not permitted without written permission.
 
+## Screenshots
+
+### Main Interface
+
+![GetActive Main Interface](screenshots/getactive-main.jpg)
+
+### Populated AD Structure
+
+![GetActive Populated Structure](screenshots/getactive-populated.jpg)
+
+### Object Properties
+
+![GetActive Object Properties](screenshots/getactive-properties.jpg)
+
+
