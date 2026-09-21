@@ -1,0 +1,62 @@
+GetActive Proprietary License
+
+Copyright © 2026 William King. All rights reserved.
+
+GetActive is proprietary software.
+
+Permission is granted to individuals and organizations to download and use GetActive for personal, educational, evaluation, or internal business purposes, subject to the terms below.
+
+You may:
+
+* Download and use GetActive.
+* Use GetActive for personal, educational, evaluation, or internal business purposes.
+* Create and save project files using GetActive.
+* Share project files created with GetActive.
+
+You may not:
+
+* Modify, alter, adapt, or create derivative works of GetActive.
+* Redistribute, republish, mirror, or otherwise make copies of GetActive available to others.
+* Repackage GetActive as part of another application, product, service, website, repository, or software distribution.
+* Sell, sublicense, rent, lease, or commercially distribute GetActive.
+* Remove or alter copyright, licensing, attribution, or ownership notices.
+* Represent GetActive or any modified version of GetActive as your own work.
+* Incorporate GetActive source code, in whole or in part, into another project or product without prior written permission.
+
+Source Availability
+
+GetActive may be distributed in a format where its HTML, CSS, JavaScript, or other source code can be viewed.
+
+The ability to view or access the source code does not grant permission to copy, modify, reuse, redistribute, publish, or create derivative works from that source code.
+
+Redistribution
+
+Redistribution of GetActive is not permitted without prior written permission from the copyright holder.
+
+Users who wish to share GetActive with others should direct them to the official GetActive GitHub repository or other official distribution location provided by the copyright holder.
+
+Ownership
+
+GetActive and its source code remain the exclusive property of William King.
+
+No ownership rights are transferred under this license.
+
+Warranty Disclaimer
+
+GetActive is provided "as is" without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, reliability, or noninfringement.
+
+The copyright holder shall not be liable for any damages, losses, system changes, data loss, business interruption, or other consequences resulting from the use or inability to use GetActive.
+
+Active Directory Disclaimer
+
+GetActive is a simulation and planning tool.
+
+It does not connect to, manage, modify, or administer Microsoft Active Directory environments.
+
+Users are responsible for independently reviewing and validating any Active Directory design, configuration, migration, or administrative decision before implementing it in a production environment.
+
+Permission Requests
+
+Permission for redistribution, modification, integration, commercial use, or other uses not specifically permitted by this license must be obtained in writing from the copyright holder.
+
+By downloading, accessing, or using GetActive, you agree to the terms of this license.
