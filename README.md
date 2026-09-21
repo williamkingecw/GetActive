@@ -131,3 +131,5 @@ Feedback from people who actively manage Active Directory environments is especi
 
 License information will be added as the project moves from Release Candidate to the final public release.
 
+GetActive is proprietary software. Use is permitted under the terms provided in the LICENSE file. Modification and redistribution are not permitted without written permission.
+
